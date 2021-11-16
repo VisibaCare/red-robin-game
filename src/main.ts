@@ -39,6 +39,6 @@ app.loader.load((loader) => {
     let t = 0
     app.ticker.add(dt => {
         game.update()
+        game.draw()
     })
 });
-

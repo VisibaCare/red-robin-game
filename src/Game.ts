@@ -1,5 +1,7 @@
 import * as PIXI from "pixi.js"
 import * as PIXIgif from '@pixi/gif';
+import { Player } from "./Player"
+import { PlayerBullet } from "./PlayerBullet"
 
 export interface GameResources {
     playerGif: PIXIgif.AnimatedGIF
@@ -29,7 +31,7 @@ export class Game {
         this.score = 0
         this.resources = resources
         this.app = app
-        this.player = new Player(this, resources.playerGif)
+        this.player = new Player(this)
         // const enemy = new Enemy(this, resources.enemyTexture)
         // enemy.x = app.screen.width
         // enemy.y = app.screen.height / 2
@@ -40,11 +42,9 @@ export class Game {
 
         window.addEventListener("keydown", e => {
             this.pressedKeys.add(e.code)
-            console.log(e)
         })
         window.addEventListener("keyup", e => {
             this.pressedKeys.delete(e.code)
-            console.log(e)
         })
 
         this.playerBullets = []
@@ -55,10 +55,9 @@ export class Game {
     }
 
     update(): void {
-        this.player.update(this)
-
+        this.player.onUpdate(this)
         for (const playerBullet of this.playerBullets) {
-            playerBullet.update(this)
+            playerBullet.onUpdate(this)
         }
 
         for (const enemy of this.enemies) {
@@ -92,7 +91,7 @@ export class Game {
         for (let i = 0; i < this.playerBullets.length; i++) {
             const playerBullet = this.playerBullets[i]!
             if (playerBullet.shouldDestroy) {
-                playerBullet.destroy(this)
+                playerBullet.onDestroy(this)
                 this.playerBullets.splice(i, 1)
             }
         }
@@ -111,6 +110,21 @@ export class Game {
 Player bullet count: ${this.playerBullets.length}
 Score: ${this.score}
 `
+    }
+
+    spawnPlayerBullet(x: number, y: number): void {
+        const bullet = new PlayerBullet(this)
+        bullet.x = x
+        bullet.y = y
+        bullet.vx = 10
+        this.playerBullets.push(bullet)
+    }
+
+    draw(): void {
+        this.player.onDraw()
+        for (const playerBullet of this.playerBullets) {
+            playerBullet.onDraw()
+        }
     }
 
     private _spawnEnemy(): void {
@@ -132,7 +146,7 @@ Score: ${this.score}
     }
 }
 
-export class Player {
+export class _Player {
     sprite: PIXIgif.AnimatedGIF
     x: number
     y: number
@@ -172,10 +186,10 @@ export class Player {
         }
 
         if ((game.pressedKeys.has("KeyZ") || game.pressedKeys.has("Space")) && this.shotCooldown === 0) {
-            const bullet = new PlayerBullet(game, game.resources.playerBulletTexture)
+            const bullet = new _PlayerBullet(game, game.resources.playerBulletTexture)
             bullet.x = this.x
             bullet.y = this.y
-            game.playerBullets.push(bullet)
+            // game.playerBullets.push(bullet)
             this.shotCooldown = 10
         }
 
@@ -187,7 +201,7 @@ export class Player {
     }
 }
 
-export class PlayerBullet {
+export class _PlayerBullet {
     sprite: PIXI.Sprite
     x: number
     y: number
