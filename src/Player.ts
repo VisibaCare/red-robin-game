@@ -17,7 +17,7 @@ export class Player {
         this.sprite = game.resources.playerGif
         this.sprite.anchor.set(0.5)
         this.sprite.scale.set(0.25)
-        game.app.stage.addChild(this.sprite)
+        game.stage.addChild(this.sprite)
 
         this.x = 0
         this.y = 0
@@ -29,7 +29,7 @@ export class Player {
         this.circle = new PIXI.Graphics()
         this.circle.lineStyle(2, 0xFF0000)
         this.circle.drawCircle(0, 0, this.hitboxRadius)
-        game.app.stage.addChild(this.circle)
+        game.stage.addChild(this.circle)
     }
 
     onUpdate(game: Game): void {
@@ -38,13 +38,13 @@ export class Player {
             this.x = Math.max(this.x - 5, 0)
         }
         if (game.pressedKeys.has("ArrowRight")) {
-            this.x = Math.min(this.x + 5, game.app.screen.width - 1)
+            this.x = Math.min(this.x + 5, game.screen.width - 1)
         }
         if (game.pressedKeys.has("ArrowUp")) {
             this.y = Math.max(this.y - 5, 0)
         }
         if (game.pressedKeys.has("ArrowDown")) {
-            this.y = Math.min(this.y + 5, game.app.screen.height - 1)
+            this.y = Math.min(this.y + 5, game.screen.height - 1)
         }
 
         // Shooting
@@ -61,13 +61,13 @@ export class Player {
         }
     }
 
-    onCollideWithEnemy(): void {
+    onCollideWithEnemy(game: Game): void {
         if (this.invulnerableAfterDamageCooldown === 0) {
 
             this.hp -= 1;
 
             if (this.hp === 0) {
-                // game over
+                game.gameOver = true;
             }
 
             this.invulnerableAfterDamageCooldown = 100;
@@ -84,7 +84,7 @@ export class Player {
     }
 
     onDestroy(game: Game): void {
-        game.app.stage.removeChild(this.sprite)
-        game.app.stage.removeChild(this.circle)
+        game.stage.removeChild(this.sprite)
+        game.stage.removeChild(this.circle)
     }
 }

@@ -21,7 +21,7 @@ export class Enemy {
         this.sprite.anchor.set(0.5)
         this.sprite.angle = -135
         this.sprite.scale.set(0.125)
-        game.app.stage.addChild(this.sprite)
+        game.stage.addChild(this.sprite)
         this.hitboxRadius = 25
         this.x = 0
         this.y = 0
@@ -36,7 +36,7 @@ export class Enemy {
         gr.drawCircle(0, 0, this.hitboxRadius);
 
         this.circle = gr;
-        game.app.stage.addChild(gr)
+        game.stage.addChild(gr)
     }
 
     onUpdate(game: Game): void {
@@ -50,7 +50,7 @@ export class Enemy {
             this.shotTimer = 100
         }
         
-        if (this.x < 0 || this.y < 0 || this.x >= game.app.screen.width || this.y >= game.app.screen.height) {
+        if (this.x < 0 || this.y < 0 || this.x >= game.screen.width || this.y >= game.screen.height) {
             this.shouldDestroy = true
         }
     }
@@ -81,8 +81,8 @@ export class Enemy {
     }
 
     onDestroy(game: Game): void {
-        game.app.stage.removeChild(this.sprite)
-        game.app.stage.removeChild(this.circle)
+        game.stage.removeChild(this.sprite)
+        game.stage.removeChild(this.circle)
 
         this.sprite.destroy()
         this.circle.destroy()

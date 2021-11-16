@@ -12,6 +12,7 @@
     "newLine": "lf",
     "outDir": "dist",
     "sourceMap": true,
+    "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "isolatedModules": true,
     "target": "ESNext"

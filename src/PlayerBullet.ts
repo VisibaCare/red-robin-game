@@ -18,7 +18,7 @@ export class PlayerBullet {
         this.sprite.anchor.set(0.5)
         this.sprite.angle = -90
         this.sprite.scale.set(1 / 16)
-        game.app.stage.addChild(this.sprite)
+        game.stage.addChild(this.sprite)
 
         this.x = 0
         this.y = 0
@@ -30,7 +30,7 @@ export class PlayerBullet {
         this.circle = new PIXI.Graphics()
         this.circle.lineStyle(2, 0xFF0000)
         this.circle.drawCircle(0, 0, this.hitboxRadius)
-        game.app.stage.addChild(this.circle)
+        game.stage.addChild(this.circle)
     }
 
     onUpdate(game: Game): void {
@@ -38,7 +38,7 @@ export class PlayerBullet {
         this.x += this.vx
         this.y += this.vy
 
-        if (this.x < 0 || this.y < 0 || this.x >= game.app.screen.width || this.y >= game.app.screen.height) {
+        if (this.x < 0 || this.y < 0 || this.x >= game.screen.width || this.y >= game.screen.height) {
             this.shouldDestroy = true
         }
     }
@@ -55,7 +55,7 @@ export class PlayerBullet {
     }
 
     onDestroy(game: Game): void {
-        game.app.stage.removeChild(this.sprite)
-        game.app.stage.removeChild(this.circle)
+        game.stage.removeChild(this.sprite)
+        game.stage.removeChild(this.circle)
     }
 }

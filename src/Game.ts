@@ -25,8 +25,10 @@ export interface GameResources {
 export class Game {
     time: number
     score: number
+    gameOver: boolean
 
-    app: PIXI.Application
+    stage: PIXI.Container
+    screen: PIXI.Rectangle
     player: Player
     background: Background
     enemies: Enemy[]
@@ -40,17 +42,20 @@ export class Game {
     debugElement: HTMLParagraphElement
 
     constructor(
-        app: PIXI.Application,
+        stage: PIXI.Container,
         resources: GameResources,
+        screen: PIXI.Rectangle
     ) {
         this.score = 0
         this.resources = resources
-        this.app = app
+        this.stage = stage
         this.player = new Player(this)
         this.background = new Background(this)
         this.enemies = []
         this.time = 0
         this.pressedKeys = new Set()
+        this.screen = screen
+        this.gameOver = false
 
         window.addEventListener("keydown", e => {
             this.pressedKeys.add(e.code)
@@ -97,7 +102,7 @@ export class Game {
             if (!enemy.shouldDestroy) {
                 if (this._hasCollided(enemy, this.player)) {
                     // collision detected!
-                    this.player.onCollideWithEnemy()
+                    this.player.onCollideWithEnemy(this)
                     console.log('player collided');
                 }
             }
@@ -105,7 +110,7 @@ export class Game {
 
         for (const enemyBullet of this.enemyBullets) {
             if (this._hasCollided(this.player, enemyBullet)) {
-                this.player.onCollideWithEnemy();
+                this.player.onCollideWithEnemy(this);
                 enemyBullet.onCollideWithPlayer();
                 console.log('player collided');
             }
@@ -181,8 +186,8 @@ Invulnerable: ${this.player.invulnerableAfterDamageCooldown > 0}
     }
 
     private _spawnEnemy(): void {
-        const x = this.app.screen.width
-        const y = (this.app.screen.height * 0.8) * Math.random() + this.app.screen.height * 0.1
+        const x = this.screen.width
+        const y = (this.screen.height * 0.8) * Math.random() + this.screen.height * 0.1
         const vx = -(1 + Math.random() * 9)
         const vy = Math.random() * 4 - 2
         const enemy = new Enemy(this, this.resources.enemyTexture)

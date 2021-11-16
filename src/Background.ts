@@ -119,14 +119,14 @@ export class Background {
         this.layer9.tilePosition.y = 0;
         this.layer9.tint = 0xc3bdc9
 
-        game.app.stage.addChild(this.layer9);
-        game.app.stage.addChild(this.layer8);
-        game.app.stage.addChild(this.layer7);
-        game.app.stage.addChild(this.layer6);
-        game.app.stage.addChild(this.layer5);
-        game.app.stage.addChild(this.layer4);
-        game.app.stage.addChild(this.layer3);
-        game.app.stage.addChild(this.layer2);
+        game.stage.addChild(this.layer9);
+        game.stage.addChild(this.layer8);
+        game.stage.addChild(this.layer7);
+        game.stage.addChild(this.layer6);
+        game.stage.addChild(this.layer5);
+        game.stage.addChild(this.layer4);
+        game.stage.addChild(this.layer3);
+        game.stage.addChild(this.layer2);
 
     }
 
