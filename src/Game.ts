@@ -3,6 +3,7 @@ import * as PIXI from "pixi.js"
 export interface GameResources {
     playerTexture: PIXI.Texture
     playerBulletTexture: PIXI.Texture
+    enemyTexture: PIXI.Texture
 }
 
 export class Game {
@@ -10,6 +11,7 @@ export class Game {
 
     app: PIXI.Application
     player: Player
+    enemies: Enemy[]
     resources: GameResources
 
     pressedKeys: Set<string>
@@ -25,6 +27,7 @@ export class Game {
         this.resources = resources
         this.app = app
         this.player = new Player(this, resources.playerTexture)
+        this.enemies = [new Enemy(this, resources.enemyTexture)]
         this.time = 0
         this.pressedKeys = new Set()
 
@@ -45,8 +48,31 @@ export class Game {
 
     update(): void {
         this.player.update(this)
+
         for (const playerBullet of this.playerBullets) {
             playerBullet.update(this)
+        }
+
+        for (const enemy of this.enemies) {
+            enemy.update(this)
+        }
+
+        // check for collisions
+        for (const enemy of this.enemies) {
+
+            for (const playerBullet of this.playerBullets) {
+
+                var dx = (enemy.x + enemy.hitboxRadius) - (playerBullet.x + playerBullet.hitboxRadius);
+                var dy = (enemy.y + enemy.hitboxRadius) - (playerBullet.y + playerBullet.hitboxRadius);
+                var distance = Math.sqrt(dx * dx + dy * dy);
+            
+                if (distance < enemy.hitboxRadius + playerBullet.hitboxRadius) {
+                    // collision detected!
+                    enemy.shouldDestroy = true;
+                    playerBullet.shouldDestroy = true;
+                    console.log('collided');
+                }
+            }
         }
 
         // Remove all destroyed player bullets
@@ -55,6 +81,14 @@ export class Game {
             if (playerBullet.shouldDestroy) {
                 playerBullet.destroy(this)
                 this.playerBullets.splice(i, 1)
+            }
+        }
+
+        for (let i = 0; i < this.enemies.length; i++) {
+            const enemy = this.enemies[i]!
+            if (enemy.shouldDestroy) {
+                enemy.destroy(this)
+                this.enemies.splice(i, 1)
             }
         }
         this.time++
@@ -119,6 +153,8 @@ export class PlayerBullet {
     x: number
     y: number
     shouldDestroy: boolean
+    hitboxRadius: number
+    circle: PIXI.Graphics
 
     constructor(
         game: Game,
@@ -127,11 +163,20 @@ export class PlayerBullet {
         this.sprite = new PIXI.Sprite(texture)
         this.sprite.anchor.set(0.5)
         this.sprite.angle = -90
-        this.sprite.scale.set(1/16)
+        this.sprite.scale.set(1 / 16)
         game.app.stage.addChild(this.sprite)
         this.x = 0
         this.y = 0
         this.shouldDestroy = false
+        this.hitboxRadius = 10
+
+        const gr = new PIXI.Graphics();
+        gr.beginFill(0xffffff);
+        gr.drawCircle(0, 0, this.hitboxRadius);
+        gr.endFill();
+
+        this.circle = gr;
+        game.app.stage.addChild(gr)
     }
 
     update(game: Game): void {
@@ -141,11 +186,71 @@ export class PlayerBullet {
             this.shouldDestroy = true
         }
 
+        this.circle.x = this.x
+        this.circle.y = this.y
+
         this.sprite.x = this.x
         this.sprite.y = this.y
     }
 
     destroy(game: Game): void {
         game.app.stage.removeChild(this.sprite)
+        game.app.stage.removeChild(this.circle)
+
+        this.sprite.destroy()
+        this.circle.destroy()
+    }
+}
+
+export class Enemy {
+
+    sprite: PIXI.Sprite
+    hitboxRadius: number
+    x: number
+    y: number
+    circle: PIXI.Graphics
+    shouldDestroy: boolean
+
+    constructor(
+        game: Game,
+        texture: PIXI.Texture,
+    ) {
+        this.sprite = new PIXI.Sprite(texture)
+        this.sprite.anchor.set(0.5)
+        this.sprite.scale.set(0.125)
+        game.app.stage.addChild(this.sprite)
+        this.hitboxRadius = 25
+        this.x = 250
+        this.y = 250
+        this.shouldDestroy = false
+
+        const gr = new PIXI.Graphics();
+        gr.beginFill(0xffffff);
+        gr.drawCircle(0, 0, this.hitboxRadius);
+        gr.endFill();
+
+        this.circle = gr;
+        game.app.stage.addChild(gr)
+    }
+
+    update(game: Game): void {
+
+        this.circle.x = this.x;
+        this.circle.y = this.y;
+
+        this.sprite.x = this.x
+        this.sprite.y = this.y
+    }
+
+    onCollideWithPlayerBullet(): void {
+        this.shouldDestroy = true;
+    }
+
+    destroy(game: Game): void {
+        game.app.stage.removeChild(this.sprite)
+        game.app.stage.removeChild(this.circle)
+
+        this.sprite.destroy()
+        this.circle.destroy()
     }
 }

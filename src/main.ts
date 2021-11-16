@@ -27,6 +27,7 @@ document.body.appendChild(app.view)
 const game = new Game(app, {
     playerTexture: PIXI.Texture.from("assets/Red_Robin.png"),
     playerBulletTexture: PIXI.Texture.from("assets/VC_Grow.png"),
+    enemyTexture: PIXI.Texture.from("assets/VC_Act.png"),
 })
 
 let t = 0
