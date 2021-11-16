@@ -8,6 +8,7 @@ export interface GameResources {
 
 export class Game {
     time: number
+    score: number
 
     app: PIXI.Application
     player: Player
@@ -24,6 +25,7 @@ export class Game {
         app: PIXI.Application,
         resources: GameResources,
     ) {
+        this.score = 0
         this.resources = resources
         this.app = app
         this.player = new Player(this, resources.playerTexture)
@@ -47,6 +49,7 @@ export class Game {
         this.playerBullets = []
 
         this.debugElement = document.createElement("p")
+        this.debugElement.style.whiteSpace = "pre"
         document.body.appendChild(this.debugElement)
     }
 
@@ -72,7 +75,7 @@ export class Game {
             
                 if (distance < enemy.hitboxRadius + playerBullet.hitboxRadius) {
                     // collision detected!
-                    enemy.onCollideWithPlayerBullet()
+                    enemy.onCollideWithPlayerBullet(this)
                     playerBullet.onCollideWithEnemy()
                     console.log('collided');
                 }
@@ -105,6 +108,7 @@ export class Game {
 
         this.debugElement.textContent = `
 Player bullet count: ${this.playerBullets.length}
+Score: ${this.score}
 `
     }
 
@@ -166,7 +170,7 @@ export class Player {
             this.y += 5;
         }
 
-        if (game.pressedKeys.has("Space") && this.shotCooldown === 0) {
+        if ((game.pressedKeys.has("KeyZ") || game.pressedKeys.has("Space")) && this.shotCooldown === 0) {
             const bullet = new PlayerBullet(game, game.resources.playerBulletTexture)
             bullet.x = this.x
             bullet.y = this.y
@@ -300,9 +304,10 @@ export class Enemy {
             : 0xFF0000
     }
 
-    onCollideWithPlayerBullet(): void {
+    onCollideWithPlayerBullet(game: Game): void {
         this.hp -= 1
         if (this.hp === 0) {
+            game.score += 1000
             this.shouldDestroy = true;
         }
     }
