@@ -39,7 +39,7 @@ export class Enemy {
         game.app.stage.addChild(gr)
     }
 
-    update(game: Game): void {
+    onUpdate(game: Game): void {
         this.x += this.vx
         this.y += this.vy
         if (this.shotTimer > 0) {

@@ -54,6 +54,9 @@ export class Game {
         this.pressedKeys = new Set()
 
         window.addEventListener("keydown", e => {
+            if (e.code === "ArrowUp" || e.code === "ArrowDown") {
+                e.preventDefault()
+            }
             this.pressedKeys.add(e.code)
         })
         window.addEventListener("keyup", e => {
@@ -77,7 +80,7 @@ export class Game {
             playerBullet.onUpdate(this)
         }
         for (const enemy of this.enemies) {
-            enemy.update(this)
+            enemy.onUpdate(this)
         }
         for (const enemyBullet of this.enemyBullets) {
             enemyBullet.onUpdate(this)
@@ -87,7 +90,6 @@ export class Game {
         for (const enemy of this.enemies) {
 
             for (const playerBullet of this.playerBullets) {
-
                 if (this._hasCollided(playerBullet, enemy)) {
                     // collision detected!
                     enemy.onCollideWithPlayerBullet(this)
@@ -102,6 +104,14 @@ export class Game {
                     this.player.onCollideWithEnemy()
                     console.log('player collided');
                 }
+            }
+        }
+
+        for (const enemyBullet of this.enemyBullets) {
+            if (this._hasCollided(this.player, enemyBullet)) {
+                this.player.onCollideWithEnemy();
+                enemyBullet.onCollideWithPlayer();
+                console.log('player collided');
             }
         }
 
