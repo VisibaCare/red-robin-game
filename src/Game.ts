@@ -12,6 +12,7 @@ export interface GameResources {
     enemyTexture: PIXI.Texture
     backgroundTexture: PIXI.Texture
 
+    layer1: PIXI.Texture
     layer2: PIXI.Texture
     layer3: PIXI.Texture
     layer4: PIXI.Texture
@@ -20,12 +21,16 @@ export interface GameResources {
     layer7: PIXI.Texture
     layer8: PIXI.Texture
     layer9: PIXI.Texture
+
+    laserSound: AudioBuffer
+    explosion: AudioBuffer
 }
 
 export class Game {
     time: number
     score: number
     gameOver: boolean
+    audioContext: AudioContext
 
     stage: PIXI.Container
     screen: PIXI.Rectangle
@@ -44,10 +49,12 @@ export class Game {
     constructor(
         stage: PIXI.Container,
         resources: GameResources,
-        screen: PIXI.Rectangle
+        screen: PIXI.Rectangle,
+        audioContext: AudioContext,
     ) {
         this.score = 0
         this.resources = resources
+        this.audioContext = audioContext
         this.stage = stage
         this.player = new Player(this)
         this.background = new Background(this)
@@ -58,6 +65,9 @@ export class Game {
         this.gameOver = false
 
         window.addEventListener("keydown", e => {
+            if (e.code === "ArrowUp" || e.code === "ArrowDown") {
+                e.preventDefault()
+            }
             this.pressedKeys.add(e.code)
         })
         window.addEventListener("keyup", e => {
@@ -76,7 +86,7 @@ export class Game {
 
     update(): void {
         this.player.onUpdate(this)
-        this.background.update(this)
+        this.background.onUpdate()
         for (const playerBullet of this.playerBullets) {
             playerBullet.onUpdate(this)
         }
@@ -151,7 +161,7 @@ export class Game {
 Player bullet count: ${this.playerBullets.length}
 Score: ${this.score}
 HP: ${this.player.hp}
-Invulnerable: ${this.player.invulnerableAfterDamageCooldown > 0} 
+Invulnerable: ${this.player.invulnerableAfterDamageCooldown > 0}
 `
     }
 
@@ -183,6 +193,16 @@ Invulnerable: ${this.player.invulnerableAfterDamageCooldown > 0}
         for (const enemyBullet of this.enemyBullets) {
             enemyBullet.onDraw()
         }
+    }
+
+    playSound(sound: AudioBuffer, volume: number): void {
+        const node = this.audioContext.createBufferSource()
+        node.buffer = sound
+        const gain = this.audioContext.createGain()
+        gain.gain.value = volume
+        gain.connect(this.audioContext.destination)
+        node.connect(gain)
+        node.start()
     }
 
     private _spawnEnemy(): void {

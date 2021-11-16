@@ -4,6 +4,7 @@
     "start": "webpack serve --open"
   },
   "devDependencies": {
+    "@pixi/gif": "^1.0.1",
     "copy-webpack-plugin": "^9.1.0",
     "html-webpack-plugin": "^5.5.0",
     "pixi.js": "^6.2.0",
@@ -13,8 +14,5 @@
     "webpack-cli": "^4.9.1",
     "webpack-dev-server": "^4.5.0"
   },
-  "private": true,
-  "dependencies": {
-    "@pixi/gif": "^1.0.1"
-  }
+  "private": true
 }

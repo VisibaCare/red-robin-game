@@ -53,6 +53,7 @@ export class Player {
         }
         if (this.shotCooldown === 0 && (game.pressedKeys.has("KeyZ") || game.pressedKeys.has("Space"))) {
             game.spawnPlayerBullet(this.x, this.y)
+            game.playSound(game.resources.laserSound, 0.25)
             this.shotCooldown = 10
         }
 
@@ -64,6 +65,7 @@ export class Player {
     onCollideWithEnemy(game: Game): void {
         if (this.invulnerableAfterDamageCooldown === 0) {
 
+            game.playSound(game.resources.explosion, 0.25)
             this.hp -= 1;
 
             if (this.hp === 0) {
