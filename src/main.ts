@@ -29,7 +29,9 @@ document.body.appendChild(app.view)
 // }
 
 app.loader.add('image', 'assets/Red-Robin-flying.gif');
-app.loader.load((loader) => {
+app.loader.load(async (loader) => {
+
+    const audioContext = new AudioContext()
 
     const game = new Game(app, {
         playerGif: loader.resources.image!.animation!,
@@ -44,9 +46,11 @@ app.loader.load((loader) => {
         layer6: PIXI.Texture.from("assets/Parallax/layer06_Stars_3.png"),
         layer7: PIXI.Texture.from("assets/Parallax/layer07_Stars_2.png"),
         layer8: PIXI.Texture.from("assets/Parallax/layer08_Stars_1.png"),
-        layer9: PIXI.Texture.from("assets/Parallax/layer09_Sky.png")
-        ,
-    })
+        layer9: PIXI.Texture.from("assets/Parallax/layer09_Sky.png"),
+
+        laserSound: await audioContext.decodeAudioData(await (await fetch("assets/laserShoot.wav")).arrayBuffer()),
+        explosion: await audioContext.decodeAudioData(await (await fetch("assets/explosion.wav")).arrayBuffer()),
+    }, audioContext)
     
     let t = 0
     app.ticker.add(dt => {

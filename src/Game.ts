@@ -20,11 +20,15 @@ export interface GameResources {
     layer7: PIXI.Texture
     layer8: PIXI.Texture
     layer9: PIXI.Texture
+
+    laserSound: AudioBuffer
+    explosion: AudioBuffer
 }
 
 export class Game {
     time: number
     score: number
+    audioContext: AudioContext
 
     app: PIXI.Application
     player: Player
@@ -42,9 +46,11 @@ export class Game {
     constructor(
         app: PIXI.Application,
         resources: GameResources,
+        audioContext: AudioContext,
     ) {
         this.score = 0
         this.resources = resources
+        this.audioContext = audioContext
         this.app = app
         this.player = new Player(this)
         this.background = new Background(this)
@@ -100,7 +106,7 @@ export class Game {
             if (!enemy.shouldDestroy) {
                 if (this._hasCollided(enemy, this.player)) {
                     // collision detected!
-                    this.player.onCollideWithEnemy()
+                    this.player.onCollideWithEnemy(this)
                     console.log('player collided');
                 }
             }
@@ -108,7 +114,7 @@ export class Game {
 
         for (const enemyBullet of this.enemyBullets) {
             if (this._hasCollided(this.player, enemyBullet)) {
-                this.player.onCollideWithEnemy();
+                this.player.onCollideWithEnemy(this);
                 enemyBullet.onCollideWithPlayer();
                 console.log('player collided');
             }
@@ -181,6 +187,16 @@ Invulnerable: ${this.player.invulnerableAfterDamageCooldown > 0}
         for (const enemyBullet of this.enemyBullets) {
             enemyBullet.onDraw()
         }
+    }
+
+    playSound(sound: AudioBuffer, volume: number): void {
+        const node = this.audioContext.createBufferSource()
+        node.buffer = sound
+        const gain = this.audioContext.createGain()
+        gain.gain.value = volume
+        gain.connect(this.audioContext.destination)
+        node.connect(gain)
+        node.start()
     }
 
     private _spawnEnemy(): void {
