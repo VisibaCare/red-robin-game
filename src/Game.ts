@@ -27,7 +27,11 @@ export class Game {
         this.resources = resources
         this.app = app
         this.player = new Player(this, resources.playerTexture)
-        this.enemies = [new Enemy(this, resources.enemyTexture)]
+        // const enemy = new Enemy(this, resources.enemyTexture)
+        // enemy.x = app.screen.width
+        // enemy.y = app.screen.height / 2
+        // enemy.vx = -2
+        this.enemies = []
         this.time = 0
         this.pressedKeys = new Set()
 
@@ -68,11 +72,16 @@ export class Game {
             
                 if (distance < enemy.hitboxRadius + playerBullet.hitboxRadius) {
                     // collision detected!
-                    enemy.shouldDestroy = true;
-                    playerBullet.shouldDestroy = true;
+                    enemy.onCollideWithPlayerBullet()
+                    playerBullet.onCollideWithEnemy()
                     console.log('collided');
                 }
             }
+        }
+
+        
+        if (this.time % 30 === 0) {
+            this._spawnEnemy()
         }
 
         // Remove all destroyed player bullets
@@ -91,11 +100,30 @@ export class Game {
                 this.enemies.splice(i, 1)
             }
         }
+
         this.time++
 
         this.debugElement.textContent = `
 Player bullet count: ${this.playerBullets.length}
 `
+    }
+
+    private _spawnEnemy(): void {
+        const x = this.app.screen.width
+        const y = (this.app.screen.height / 2) * Math.random() + this.app.screen.height / 4
+        const vx = -(1 + Math.random() * 9)
+        const vy = Math.random() * 4 - 2
+        const enemy = new Enemy(this, this.resources.enemyTexture)
+        this.enemies.push(enemy)
+        enemy.x = x
+        enemy.y = y
+        enemy.vx = vx
+        enemy.vy = vy
+        enemy.sprite.x = enemy.x
+        enemy.sprite.y = enemy.y
+        enemy.circle.x = enemy.x
+        enemy.circle.y = enemy.y
+        console.log(enemy)
     }
 }
 
@@ -177,9 +205,8 @@ export class PlayerBullet {
         this.hitboxRadius = 10
 
         const gr = new PIXI.Graphics();
-        gr.beginFill(0xffffff);
+        gr.lineStyle(2, 0xFF0000)
         gr.drawCircle(0, 0, this.hitboxRadius);
-        gr.endFill();
 
         this.circle = gr;
         game.app.stage.addChild(gr)
@@ -206,16 +233,22 @@ export class PlayerBullet {
         this.sprite.destroy()
         this.circle.destroy()
     }
+
+    onCollideWithEnemy(): void {
+        this.shouldDestroy = true
+    }
 }
 
 export class Enemy {
-
     sprite: PIXI.Sprite
     hitboxRadius: number
     x: number
     y: number
     circle: PIXI.Graphics
     shouldDestroy: boolean
+    vx: number
+    vy: number
+    hp: number
 
     constructor(
         game: Game,
@@ -223,17 +256,20 @@ export class Enemy {
     ) {
         this.sprite = new PIXI.Sprite(texture)
         this.sprite.anchor.set(0.5)
+        this.sprite.angle = -135
         this.sprite.scale.set(0.125)
         game.app.stage.addChild(this.sprite)
         this.hitboxRadius = 25
-        this.x = 250
-        this.y = 250
+        this.x = 0
+        this.y = 0
         this.shouldDestroy = false
+        this.vx = 0
+        this.vy = 0
+        this.hp = 3
 
         const gr = new PIXI.Graphics();
-        gr.beginFill(0xffffff);
+        gr.lineStyle(2, 0xFF0000);
         gr.drawCircle(0, 0, this.hitboxRadius);
-        gr.endFill();
 
         this.circle = gr;
         game.app.stage.addChild(gr)
@@ -241,15 +277,34 @@ export class Enemy {
 
     update(game: Game): void {
 
+        this.x += this.vx
+        this.y += this.vy
+
         this.circle.x = this.x;
         this.circle.y = this.y;
 
         this.sprite.x = this.x
         this.sprite.y = this.y
+
+        if (this.x < 0 || this.y < 0 || this.x >= game.app.screen.width || this.y >= game.app.screen.height) {
+            this.shouldDestroy = true
+        }
+
+        // TODO: make this look good
+        this.sprite.tint = this.hp === 3
+            ? 0xFFFFFF
+            : this.hp === 2
+            ? 0xFF9999
+            : this.hp === 1
+            ? 0xFF6666
+            : 0xFF0000
     }
 
     onCollideWithPlayerBullet(): void {
-        this.shouldDestroy = true;
+        this.hp -= 1
+        if (this.hp === 0) {
+            this.shouldDestroy = true;
+        }
     }
 
     destroy(game: Game): void {
