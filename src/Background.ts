@@ -1,7 +1,8 @@
 import * as PIXI from "pixi.js"
 import { Game } from "./Game"
 export class Background {
-    //backgroundSprite: PIXI.TilingSprite;
+
+    layer1: PIXI.TilingSprite;
     layer2: PIXI.TilingSprite;
     layer3: PIXI.TilingSprite;
     layer4: PIXI.TilingSprite;
@@ -15,6 +16,19 @@ export class Background {
 
     constructor(game: Game) {
 
+        this.layer1 = new PIXI.TilingSprite(
+            game.resources.layer1,
+            640,
+            480
+        );
+        this.layer1.tileScale.set(0.5,0.5)
+        this.layer1.x = 0;
+        this.layer1.y = 0;
+        this.layer1.zIndex = -100;
+        this.layer1.tilePosition.x = 0;
+        this.layer1.tilePosition.y = 0;
+        this.layer1.tint = 0xc3bdc9
+
         this.layer2 = new PIXI.TilingSprite(
             game.resources.layer2,
             640,
@@ -26,7 +40,7 @@ export class Background {
         this.layer2.zIndex = -100;
         this.layer2.tilePosition.x = 0;
         this.layer2.tilePosition.y = 0;
-        this.layer2.tint = 0xc3bdc9
+        this.layer2.tint = 0xb1a6bd
 
         this.layer3 = new PIXI.TilingSprite(
             game.resources.layer3,
@@ -39,7 +53,7 @@ export class Background {
         this.layer3.zIndex = -100;
         this.layer3.tilePosition.x = 0;
         this.layer3.tilePosition.y = 0;
-        this.layer3.tint = 0xb1a6bd
+        this.layer3.tint = 0xa093ad
 
         this.layer4 = new PIXI.TilingSprite(
             game.resources.layer4,
@@ -119,6 +133,7 @@ export class Background {
         this.layer9.tilePosition.y = 0;
         this.layer9.tint = 0xc3bdc9
 
+        //Adds children in descending order so they layer correctly without adjusting z
         game.app.stage.addChild(this.layer9);
         game.app.stage.addChild(this.layer8);
         game.app.stage.addChild(this.layer7);
@@ -127,17 +142,19 @@ export class Background {
         game.app.stage.addChild(this.layer4);
         game.app.stage.addChild(this.layer3);
         game.app.stage.addChild(this.layer2);
+        game.app.stage.addChild(this.layer1);
 
     }
 
     update(game: Game): void {
-        this.layer2.tilePosition.x -= 3;
-        this.layer3.tilePosition.x -= 2.5;
-        this.layer4.tilePosition.x -= 2.2;
-        this.layer5.tilePosition.x -= 2;
-        this.layer6.tilePosition.x -= 1.8;
-        this.layer7.tilePosition.x -= 1.3;
-        this.layer8.tilePosition.x -= 0.9;
+        this.layer1.tilePosition.x -= 4.5;
+        this.layer2.tilePosition.x -= 4;
+        this.layer3.tilePosition.x -= 3.5;
+        this.layer4.tilePosition.x -= 3;
+        this.layer5.tilePosition.x -= 2.5;
+        this.layer6.tilePosition.x -= 2;
+        this.layer7.tilePosition.x -= 1.5;
+        this.layer8.tilePosition.x -= 1;
         this.layer9.tilePosition.x -= 0.5;
 
     }
