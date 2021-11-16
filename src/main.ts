@@ -29,6 +29,7 @@ const game = new Game(app, {
     playerBulletTexture: PIXI.Texture.from("assets/VC_Grow.png"),
     enemyTexture: PIXI.Texture.from("assets/VC_Act.png"),
 })
+    backgroundTexture: PIXI.Texture.from("assets/platformer_background_2.png"),
 
 let t = 0
 app.ticker.add(dt => {

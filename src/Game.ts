@@ -96,6 +96,27 @@ export class Game {
         this.debugElement.textContent = `
 Player bullet count: ${this.playerBullets.length}
 `
+export class Background {
+    backgroundSprite: PIXI.TilingSprite;
+
+    constructor(game: Game, backgroundTexture: PIXI.Texture) {
+        this.backgroundSprite = new PIXI.TilingSprite(
+            backgroundTexture,
+            640,
+            480
+        );
+        this.backgroundSprite.x = 0;
+        this.backgroundSprite.y = 0;
+        this.backgroundSprite.zIndex = -1000;
+        this.backgroundSprite.tilePosition.x = 0;
+        this.backgroundSprite.tilePosition.y = 0;
+        game.app.stage.addChild(this.backgroundSprite);
+        requestAnimationFrame(game.update);
+    }
+
+    update(game: Game): void {
+        this.backgroundSprite.tilePosition.x -= 0.128;
+        requestAnimationFrame(game.update);
     }
 }
 
