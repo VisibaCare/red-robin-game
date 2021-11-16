@@ -55,6 +55,7 @@ export class Game {
         screen: PIXI.Rectangle,
         audioContext: AudioContext,
     ) {
+        this.isDebug = false
         this.score = 0
         this.resources = resources
         this.audioContext = audioContext
@@ -66,7 +67,6 @@ export class Game {
         this.time = 0
         this.pressedKeys = new Set()
         this.gameOver = false
-        this.isDebug = false
 
         window.addEventListener("keydown", e => {
             if (e.code === "ArrowUp" || e.code === "ArrowDown") {
