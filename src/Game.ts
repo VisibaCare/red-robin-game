@@ -138,6 +138,7 @@ export class Game {
             if (playerBullet.shouldDestroy) {
                 playerBullet.onDestroy(this)
                 this.playerBullets.splice(i, 1)
+                i--
             }
         }
         // Enemies
@@ -146,6 +147,7 @@ export class Game {
             if (enemy.shouldDestroy) {
                 enemy.onDestroy(this)
                 this.enemies.splice(i, 1)
+                i--
             }
         }
         // Enemy bullets
@@ -154,6 +156,7 @@ export class Game {
             if (enemyBullet.shouldDestroy) {
                 enemyBullet.onDestroy(this)
                 this.enemyBullets.splice(i, 1)
+                i--
             }
         }
 
@@ -208,16 +211,19 @@ Invulnerable: ${this.player.invulnerableAfterDamageCooldown > 0}
             const playerBullet = this.playerBullets[i]!
             playerBullet.onDestroy(this)
             this.playerBullets.splice(i, 1)
+            i--
         }
         for (let i = 0; i < this.enemies.length; i++) {
             const enemy = this.enemies[i]!
             enemy.onDestroy(this)
             this.enemies.splice(i, 1)
+            i--
         }
         for (let i = 0; i < this.enemyBullets.length; i++) {
             const enemyBullet = this.enemyBullets[i]!
             enemyBullet.onDestroy(this)
             this.enemyBullets.splice(i, 1)
+            i--
         }
 
         this.player.onDestroy(this);
