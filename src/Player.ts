@@ -10,6 +10,8 @@ export class Player {
     y: number
     readonly hitboxRadius: number
     shotCooldown: number
+    invulnerableAfterDamageCooldown: number
+    hp: number
 
     constructor(game: Game) {
         this.sprite = game.resources.playerGif
@@ -21,6 +23,8 @@ export class Player {
         this.y = 0
         this.hitboxRadius = 15
         this.shotCooldown = 0
+        this.invulnerableAfterDamageCooldown = 0
+        this.hp = 3
 
         this.circle = new PIXI.Graphics()
         this.circle.lineStyle(2, 0xFF0000)
@@ -51,9 +55,23 @@ export class Player {
             game.spawnPlayerBullet(this.x, this.y)
             this.shotCooldown = 10
         }
+
+        if (this.invulnerableAfterDamageCooldown > 0) {
+            this.invulnerableAfterDamageCooldown--;
+        }
     }
 
     onCollideWithEnemy(): void {
+        if (this.invulnerableAfterDamageCooldown === 0) {
+
+            this.hp -= 1;
+
+            if (this.hp === 0) {
+                // game over
+            }
+
+            this.invulnerableAfterDamageCooldown = 100;
+        }
     }
 
     onDraw(): void {
@@ -61,6 +79,8 @@ export class Player {
         this.sprite.y = this.y
         this.circle.x = this.x
         this.circle.y = this.y
+
+        this.sprite.visible = Math.floor(this.invulnerableAfterDamageCooldown / 4) % 2 == 0;
     }
 
     onDestroy(game: Game): void {
