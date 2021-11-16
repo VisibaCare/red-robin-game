@@ -10,6 +10,7 @@ export interface GameResources {
     playerGif: PIXIgif.AnimatedGIF
     playerBulletTexture: PIXI.Texture
     enemyTexture: PIXI.Texture
+    enemyBulletTexture: PIXI.Texture
     backgroundTexture: PIXI.Texture
 
     layer1: PIXI.Texture
@@ -45,6 +46,7 @@ export class Game {
     playerBullets: PlayerBullet[]
     enemyBullets: EnemyBullet[]
 
+    isDebug: boolean
     debugElement: HTMLParagraphElement
 
     constructor(
@@ -64,6 +66,7 @@ export class Game {
         this.time = 0
         this.pressedKeys = new Set()
         this.gameOver = false
+        this.isDebug = false
 
         window.addEventListener("keydown", e => {
             if (e.code === "ArrowUp" || e.code === "ArrowDown") {
@@ -85,7 +88,7 @@ export class Game {
 
     update(): void {
         this.player.onUpdate(this)
-        this.background.onUpdate()
+        this.background.onUpdate(this)
         for (const playerBullet of this.playerBullets) {
             playerBullet.onUpdate(this)
         }

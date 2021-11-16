@@ -29,7 +29,7 @@ export class Enemy {
         this.vx = 0
         this.vy = 0
         this.hp = 3
-        this.shotTimer = 20
+        this.shotTimer = 10
 
         const gr = new PIXI.Graphics();
         gr.lineStyle(2, 0xFF0000);
@@ -37,6 +37,7 @@ export class Enemy {
 
         this.circle = gr;
         game.stage.addChild(gr)
+        this.circle.visible = game.isDebug
     }
 
     onUpdate(game: Game): void {

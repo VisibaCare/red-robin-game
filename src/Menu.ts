@@ -47,11 +47,13 @@ export class Menu {
 
         this.playButton = button;
 
-        const bg = new PIXI.Sprite(background);
+        const bg = new PIXI.TilingSprite(background, screen.width, screen.height);
 
-        bg.x = -300;
+        bg.x = 0;
         bg.tint = 0xc7c0cf
-        bg.scale.set(0.5)
+        bg.tileScale.set(0.5)
+        bg.tilePosition.x = -433
+        bg.tilePosition.y = -5
 
         stage.addChild(bg);
         stage.addChild(textPart1);

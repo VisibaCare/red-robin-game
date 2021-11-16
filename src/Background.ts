@@ -6,7 +6,7 @@ export class Background {
     layer2: PIXI.TilingSprite;
     layer3: PIXI.TilingSprite;
     layer4: PIXI.TilingSprite;
-    layer5: PIXI.TilingSprite;
+    layer5: PIXI.Sprite;
     layer6: PIXI.TilingSprite;
     layer7: PIXI.TilingSprite;
 
@@ -68,17 +68,13 @@ export class Background {
         this.layer4.tilePosition.y = 0;
         this.layer4.tint = 0xc3bdc9
 
-        this.layer5 = new PIXI.TilingSprite(
+        this.layer5 = new PIXI.Sprite(
             game.resources.layer5,
-            640,
-            480
         );
-        this.layer5.tileScale.set(0.5,0.5)
-        this.layer5.x = 0;
+        this.layer5.scale.set(0.5,0.5)
+        this.layer5.x = game.screen.width + 500;
         this.layer5.y = 0;
         this.layer5.zIndex = -100;
-        this.layer5.tilePosition.x = 0;
-        this.layer5.tilePosition.y = 0;
         this.layer5.tint = 0xc3bdc9
 
         this.layer6 = new PIXI.TilingSprite(
@@ -146,12 +142,15 @@ export class Background {
 
     }
 
-    onUpdate(): void {
+    onUpdate(game: Game): void {
         this.layer1.tilePosition.x -= 4.5;
         this.layer2.tilePosition.x -= 4;
         this.layer3.tilePosition.x -= 3.5;
         this.layer4.tilePosition.x -= 3;
-        this.layer5.tilePosition.x -= 2.5;
+        this.layer5.position.x -= 2.5;
+        if (this.layer5.position.x + this.layer5.width < 0) {
+            this.layer5.position.x = game.screen.width + 500
+        }
         this.layer6.tilePosition.x -= 2;
         this.layer7.tilePosition.x -= 1.5;
         this.layer8.tilePosition.x -= 1;

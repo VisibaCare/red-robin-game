@@ -16,7 +16,7 @@ export class PlayerBullet {
     constructor(game: Game) {
         this.sprite = new PIXI.Sprite(game.resources.playerBulletTexture)
         this.sprite.anchor.set(0.5)
-        this.sprite.angle = -90
+        this.sprite.angle = -45
         this.sprite.scale.set(1 / 16)
         game.stage.addChild(this.sprite)
 
@@ -31,6 +31,7 @@ export class PlayerBullet {
         this.circle.lineStyle(2, 0xFF0000)
         this.circle.drawCircle(0, 0, this.hitboxRadius)
         game.stage.addChild(this.circle)
+        this.circle.visible = game.isDebug
     }
 
     onUpdate(game: Game): void {

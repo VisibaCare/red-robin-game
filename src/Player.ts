@@ -30,6 +30,7 @@ export class Player {
         this.circle.lineStyle(2, 0xFF0000)
         this.circle.drawCircle(0, 0, this.hitboxRadius)
         game.stage.addChild(this.circle)
+        this.circle.visible = game.isDebug
     }
 
     onUpdate(game: Game): void {

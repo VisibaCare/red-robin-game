@@ -51,8 +51,9 @@ app.loader.load(async (loader) => {
 
     const game = new Game(gameStage, {
         playerGif: loader.resources.image!.animation!,
-        playerBulletTexture: PIXI.Texture.from("assets/VC_Grow.png"),
+        playerBulletTexture: PIXI.Texture.from("assets/VC_Care.png"),
         enemyTexture: PIXI.Texture.from("assets/VC_Act.png"),
+        enemyBulletTexture: PIXI.Texture.from("assets/VC_Grow.png"),
         backgroundTexture: PIXI.Texture.from("assets/platformer_background_2.png"),
 
         layer1: PIXI.Texture.from("assets/Parallax/layer01_Clouds_1.png"),

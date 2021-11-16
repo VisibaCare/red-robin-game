@@ -14,8 +14,7 @@ export class EnemyBullet {
     shouldDestroy: boolean
 
     constructor(game: Game) {
-        this.sprite = new PIXI.Sprite(game.resources.playerBulletTexture)
-        this.sprite.tint = 0x00FFFF
+        this.sprite = new PIXI.Sprite(game.resources.enemyBulletTexture)
         this.sprite.anchor.set(0.5)
         this.sprite.angle = 90
         this.sprite.scale.set(1 / 16)
@@ -32,6 +31,7 @@ export class EnemyBullet {
         this.circle.lineStyle(2, 0xFF0000)
         this.circle.drawCircle(0, 0, this.hitboxRadius)
         game.stage.addChild(this.circle)
+        this.circle.visible = game.isDebug
     }
 
     onUpdate(game: Game): void {
