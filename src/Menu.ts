@@ -5,6 +5,7 @@ export class Menu {
     stage: PIXI.Container
     screen: PIXI.Rectangle
     gameHasStarted: boolean
+    playButton: PIXI.Graphics
 
     constructor(stage: PIXI.Container, background: PIXI.Texture, screen: PIXI.Rectangle) {
 
@@ -12,11 +13,17 @@ export class Menu {
         this.screen = screen;
         this.gameHasStarted = false;
 
-        const text = new PIXI.Text("the red \nand \nthe robin");
-        text.style = this._getTextStyle(true);
-        text.x = this.screen.width / 2;
-        text.y = this.screen.height / 2 - 125;
-        text.anchor.set(0.5);
+        const textPart1 = new PIXI.Text("the red \nthe robin");
+        textPart1.style = this._getMainTextStyle(true);
+        textPart1.x = this.screen.width / 2;
+        textPart1.y = this.screen.height / 2 - 125;
+        textPart1.anchor.set(0.5);
+
+        const textPart2 = new PIXI.Text("and");
+        textPart2.style = new PIXI.TextStyle({ fontFamily: 'test', fontSize: 40, fill: 0xd27da8 })
+        textPart2.x = this.screen.width / 2 - 20;
+        textPart2.y = this.screen.height / 2 - 125;
+        textPart2.anchor.set(0.5);
 
         const button = new PIXI.Graphics();
         button.x = this.screen.width / 2 - 100;
@@ -26,7 +33,7 @@ export class Menu {
 
         const playText = new PIXI.Text("play");
 
-        playText.style = this._getTextStyle(false);
+        playText.style = this._getMainTextStyle(false);
         playText.x = 100;
         playText.anchor.set(0.5);
         playText.y = 30;
@@ -36,6 +43,9 @@ export class Menu {
         button.interactive = true
         button.on('pointerdown', () => this._onClick())
         button.on('pointerover', () => this._onHover())
+        button.on('pointerout', () => this._onOut())
+
+        this.playButton = button;
 
         const bg = new PIXI.Sprite(background);
 
@@ -44,21 +54,24 @@ export class Menu {
         bg.scale.set(0.5)
 
         stage.addChild(bg);
-        stage.addChild(text);
+        stage.addChild(textPart1);
+        stage.addChild(textPart2);
+        // stage.addChild(textPart3);
         stage.addChild(button);
 
     }
 
-    private _getTextStyle(withGradient: boolean): PIXI.TextStyle {
+    private _getMainTextStyle(withGradient: boolean): PIXI.TextStyle {
         const textStyle = new PIXI.TextStyle({
             fillGradientType: 1,
             fillGradientStops: [
                 0
             ],
             fontFamily: "\"Courier New\", Courier, monospace",
-            fontSize: 50,
+            fontSize: 55,
             fontVariant: "small-caps",
             fontWeight: "bold",
+            lineHeight: 50,
             align: "center"
         });
 
@@ -77,8 +90,11 @@ export class Menu {
         this.gameHasStarted = true;
     }
 
-    // todo: add button hover effect
     private _onHover(): void {
+        this.playButton.tint = 0xc7c0cf
+    }
 
+    private _onOut(): void {
+        this.playButton.tint = 0xFFFFFF
     }
 }

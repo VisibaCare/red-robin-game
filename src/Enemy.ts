@@ -50,7 +50,7 @@ export class Enemy {
             this.shotTimer = 100
         }
         
-        if (this.x < 0 || this.y < 0 || this.x >= game.screen.width || this.y >= game.screen.height) {
+        if (this.x < -100 || this.y < -100 || this.x >= game.screen.width + 100 || this.y >= game.screen.height + 100) {
             this.shouldDestroy = true
         }
     }

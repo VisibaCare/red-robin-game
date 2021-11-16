@@ -56,12 +56,12 @@ export class Game {
         this.resources = resources
         this.audioContext = audioContext
         this.stage = stage
+        this.screen = screen
         this.player = new Player(this)
         this.background = new Background(this)
         this.enemies = []
         this.time = 0
         this.pressedKeys = new Set()
-        this.screen = screen
         this.gameOver = false
 
         window.addEventListener("keydown", e => {
@@ -80,8 +80,6 @@ export class Game {
         this.debugElement = document.createElement("p")
         this.debugElement.style.whiteSpace = "pre"
         document.body.appendChild(this.debugElement)
-
-        this.spawnEnemyBullet(0, 100, 2, 0)
     }
 
     update(): void {
@@ -155,7 +153,12 @@ export class Game {
             }
         }
 
+        this.score++
         this.time++
+
+        if (this.gameOver) {
+            this.end();
+        }
 
         this.debugElement.textContent = `
 Player bullet count: ${this.playerBullets.length}
@@ -195,6 +198,30 @@ Invulnerable: ${this.player.invulnerableAfterDamageCooldown > 0}
         }
     }
 
+    end(): void {
+
+        for (let i = 0; i < this.playerBullets.length; i++) {
+            const playerBullet = this.playerBullets[i]!
+            playerBullet.onDestroy(this)
+            this.playerBullets.splice(i, 1)
+        }
+        for (let i = 0; i < this.enemies.length; i++) {
+            const enemy = this.enemies[i]!
+            enemy.onDestroy(this)
+            this.enemies.splice(i, 1)
+        }
+        for (let i = 0; i < this.enemyBullets.length; i++) {
+            const enemyBullet = this.enemyBullets[i]!
+            enemyBullet.onDestroy(this)
+            this.enemyBullets.splice(i, 1)
+        }
+
+        this.player.onDestroy(this);
+        this.player = new Player(this);
+
+        this.score = 0;
+    }
+
     playSound(sound: AudioBuffer, volume: number): void {
         const node = this.audioContext.createBufferSource()
         node.buffer = sound
@@ -206,7 +233,7 @@ Invulnerable: ${this.player.invulnerableAfterDamageCooldown > 0}
     }
 
     private _spawnEnemy(): void {
-        const x = this.screen.width
+        const x = this.screen.width + 99
         const y = (this.screen.height * 0.8) * Math.random() + this.screen.height * 0.1
         const vx = -(1 + Math.random() * 9)
         const vy = Math.random() * 4 - 2

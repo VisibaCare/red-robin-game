@@ -17,10 +17,10 @@ export class Player {
         this.sprite = game.resources.playerGif
         this.sprite.anchor.set(0.5)
         this.sprite.scale.set(0.25)
+        this.sprite.visible = true
         game.stage.addChild(this.sprite)
-
-        this.x = 0
-        this.y = 0
+        this.x = 50
+        this.y = game.screen.height / 2
         this.hitboxRadius = 15
         this.shotCooldown = 0
         this.invulnerableAfterDamageCooldown = 0

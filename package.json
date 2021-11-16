@@ -14,5 +14,8 @@
     "webpack-cli": "^4.9.1",
     "webpack-dev-server": "^4.5.0"
   },
-  "private": true
+  "private": true,
+  "dependencies": {
+    "pixi-webfont-loader": "^1.0.2"
+  }
 }

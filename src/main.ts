@@ -1,9 +1,11 @@
 import * as PIXI from "pixi.js"
 import { Game } from "./Game"
 import * as PIXIgif from '@pixi/gif';
+import { WebfontLoaderPlugin } from "pixi-webfont-loader";
 import { Menu } from "./Menu";
 
 PIXI.Loader.registerPlugin(PIXIgif.AnimatedGIFLoader);
+PIXI.Loader.registerPlugin(WebfontLoaderPlugin);
 
 const app = new PIXI.Application({
     width: 640,
@@ -29,7 +31,9 @@ document.body.appendChild(app.view)
 //     app.stage.addChild(sprite)
 // }
 
+
 app.loader.add('image', 'assets/Red-Robin-flying.gif');
+app.loader.add('test', 'assets/CedarvilleCursive-Regular.ttf')
 app.loader.load(async (loader) => {
 
     const audioContext = new AudioContext()
@@ -72,6 +76,7 @@ app.loader.load(async (loader) => {
             gameStage.visible = false
 
             menu.gameHasStarted = false
+            game.gameOver = false
         }
 
         if (menu.gameHasStarted) {
@@ -83,4 +88,3 @@ app.loader.load(async (loader) => {
         }
     })
 });
-
