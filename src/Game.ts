@@ -53,6 +53,9 @@ export class Game {
         this.pressedKeys = new Set()
 
         window.addEventListener("keydown", e => {
+            if (e.code === "ArrowUp" || e.code === "ArrowDown") {
+                e.preventDefault()
+            }
             this.pressedKeys.add(e.code)
         })
         window.addEventListener("keyup", e => {
