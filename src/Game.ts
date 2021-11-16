@@ -161,7 +161,7 @@ Score: ${this.score}
 
     private _spawnEnemy(): void {
         const x = this.app.screen.width
-        const y = (this.app.screen.height / 2) * Math.random() + this.app.screen.height / 4
+        const y = (this.app.screen.height * 0.8) * Math.random() + this.app.screen.height * 0.1
         const vx = -(1 + Math.random() * 9)
         const vy = Math.random() * 4 - 2
         const enemy = new Enemy(this, this.resources.enemyTexture)

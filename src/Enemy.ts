@@ -11,6 +11,7 @@ export class Enemy {
     vx: number
     vy: number
     hp: number
+    shotTimer: number
 
     constructor(
         game: Game,
@@ -28,6 +29,7 @@ export class Enemy {
         this.vx = 0
         this.vy = 0
         this.hp = 3
+        this.shotTimer = 20
 
         const gr = new PIXI.Graphics();
         gr.lineStyle(2, 0xFF0000);
@@ -38,22 +40,19 @@ export class Enemy {
     }
 
     update(game: Game): void {
-
         this.x += this.vx
         this.y += this.vy
-
+        if (this.shotTimer > 0) {
+            this.shotTimer -= 1
+        }
+        if (this.shotTimer === 0) {
+            game.spawnEnemyBullet(this.x, this.y, this.vx - 2, 0)
+            this.shotTimer = 100
+        }
+        
         if (this.x < 0 || this.y < 0 || this.x >= game.app.screen.width || this.y >= game.app.screen.height) {
             this.shouldDestroy = true
         }
-
-        // TODO: make this look good
-        this.sprite.tint = this.hp === 3
-            ? 0xFFFFFF
-            : this.hp === 2
-            ? 0xFF9999
-            : this.hp === 1
-            ? 0xFF6666
-            : 0xFF0000
     }
 
     onCollideWithPlayerBullet(game: Game): void {
@@ -70,6 +69,15 @@ export class Enemy {
 
         this.sprite.x = this.x
         this.sprite.y = this.y
+
+        // TODO: make this look good
+        this.sprite.tint = this.hp === 3
+            ? 0xFFFFFF
+            : this.hp === 2
+            ? 0xFF9999
+            : this.hp === 1
+            ? 0xFF6666
+            : 0xFF0000
     }
 
     onDestroy(game: Game): void {
