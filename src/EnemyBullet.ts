@@ -1,7 +1,7 @@
 import * as PIXI from "pixi.js"
 import { Game } from "./Game"
 
-export class PlayerBullet {
+export class EnemyBullet {
     readonly sprite: PIXI.Sprite
     readonly circle: PIXI.Graphics
 
@@ -10,13 +10,14 @@ export class PlayerBullet {
     vx: number
     vy: number
     readonly hitboxRadius: number
-
+    
     shouldDestroy: boolean
 
     constructor(game: Game) {
         this.sprite = new PIXI.Sprite(game.resources.playerBulletTexture)
+        this.sprite.tint = 0x00FFFF
         this.sprite.anchor.set(0.5)
-        this.sprite.angle = -90
+        this.sprite.angle = 90
         this.sprite.scale.set(1 / 16)
         game.app.stage.addChild(this.sprite)
 
@@ -43,7 +44,7 @@ export class PlayerBullet {
         }
     }
 
-    onCollideWithEnemy(): void {
+    onCollideWithPlayer(): void {
         this.shouldDestroy = true
     }
 
