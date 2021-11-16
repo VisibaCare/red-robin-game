@@ -1,5 +1,8 @@
 import * as PIXI from "pixi.js"
 import { Game } from "./Game"
+import * as PIXIgif from '@pixi/gif';
+
+PIXI.Loader.registerPlugin(PIXIgif.AnimatedGIFLoader);
 
 const app = new PIXI.Application({
     width: 640,
@@ -24,13 +27,18 @@ document.body.appendChild(app.view)
 //     app.stage.addChild(sprite)
 // }
 
-const game = new Game(app, {
-    playerTexture: PIXI.Texture.from("assets/Red_Robin.png"),
-    playerBulletTexture: PIXI.Texture.from("assets/VC_Grow.png"),
-    enemyTexture: PIXI.Texture.from("assets/VC_Act.png"),
-})
+app.loader.add('image', 'assets/Red-Robin-flying.gif');
+app.loader.load((loader) => {
 
-let t = 0
-app.ticker.add(dt => {
-    game.update()
-})
+    const game = new Game(app, {
+        playerGif: loader.resources.image!.animation!,
+        playerBulletTexture: PIXI.Texture.from("assets/VC_Grow.png"),
+        enemyTexture: PIXI.Texture.from("assets/VC_Act.png"),
+    })
+    
+    let t = 0
+    app.ticker.add(dt => {
+        game.update()
+    })
+});
+

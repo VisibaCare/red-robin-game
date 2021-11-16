@@ -1,7 +1,8 @@
 import * as PIXI from "pixi.js"
+import * as PIXIgif from '@pixi/gif';
 
 export interface GameResources {
-    playerTexture: PIXI.Texture
+    playerGif: PIXIgif.AnimatedGIF
     playerBulletTexture: PIXI.Texture
     enemyTexture: PIXI.Texture
 }
@@ -28,7 +29,7 @@ export class Game {
         this.score = 0
         this.resources = resources
         this.app = app
-        this.player = new Player(this, resources.playerTexture)
+        this.player = new Player(this, resources.playerGif)
         // const enemy = new Enemy(this, resources.enemyTexture)
         // enemy.x = app.screen.width
         // enemy.y = app.screen.height / 2
@@ -132,18 +133,18 @@ Score: ${this.score}
 }
 
 export class Player {
-    sprite: PIXI.Sprite
+    sprite: PIXIgif.AnimatedGIF
     x: number
     y: number
     shotCooldown: number
 
     constructor(
         game: Game,
-        texture: PIXI.Texture,
+        playerGif: PIXIgif.AnimatedGIF
     ) {
-        this.sprite = new PIXI.Sprite(texture)
+        this.sprite = playerGif;
         this.sprite.anchor.set(0.5)
-        this.sprite.scale.set(0.125)
+        this.sprite.scale.set(0.25)
         game.app.stage.addChild(this.sprite)
         this.x = 100
         this.y = 100
