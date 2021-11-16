@@ -17,6 +17,7 @@ export class Game {
 
     app: PIXI.Application
     player: Player
+    background: Background
     enemies: Enemy[]
     resources: GameResources
 
@@ -34,6 +35,7 @@ export class Game {
         this.resources = resources
         this.app = app
         this.player = new Player(this)
+        this.background = new Background(this, resources.backgroundTexture)
         // const enemy = new Enemy(this, resources.enemyTexture)
         // enemy.x = app.screen.width
         // enemy.y = app.screen.height / 2
@@ -58,6 +60,7 @@ export class Game {
 
     update(): void {
         this.player.onUpdate(this)
+        this.background.update(this)
         for (const playerBullet of this.playerBullets) {
             playerBullet.onUpdate(this)
         }
@@ -162,17 +165,19 @@ export class Background {
             640,
             480
         );
+        this.backgroundSprite.tileScale.set(0.5,0.5)
         this.backgroundSprite.x = 0;
         this.backgroundSprite.y = 0;
-        this.backgroundSprite.zIndex = -1000;
+        this.backgroundSprite.zIndex = -100;
         this.backgroundSprite.tilePosition.x = 0;
         this.backgroundSprite.tilePosition.y = 0;
+        this.backgroundSprite.tint = 0xc3bdc9
         game.app.stage.addChild(this.backgroundSprite);
         requestAnimationFrame(game.update);
     }
 
     update(game: Game): void {
-        this.backgroundSprite.tilePosition.x -= 0.128;
+        this.backgroundSprite.tilePosition.x -= 0.828;
         requestAnimationFrame(game.update);
     }
 }

@@ -12,6 +12,7 @@ const app = new PIXI.Application({
 })
 app.ticker.minFPS = 15
 app.ticker.maxFPS = 60
+app.stage.sortableChildren = true
 document.body.appendChild(app.view)
 
 // const sprites: PIXI.Sprite[] = [
