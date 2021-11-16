@@ -24,6 +24,7 @@ export interface GameResources {
 
     laserSound: AudioBuffer
     explosion: AudioBuffer
+    bgm: AudioBuffer
 }
 
 export class Game {
@@ -195,9 +196,10 @@ Invulnerable: ${this.player.invulnerableAfterDamageCooldown > 0}
         }
     }
 
-    playSound(sound: AudioBuffer, volume: number): void {
+    playSound(sound: AudioBuffer, volume: number, looping: boolean = false): void {
         const node = this.audioContext.createBufferSource()
         node.buffer = sound
+        node.loop = looping
         const gain = this.audioContext.createGain()
         gain.gain.value = volume
         gain.connect(this.audioContext.destination)

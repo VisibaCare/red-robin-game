@@ -62,10 +62,11 @@ app.loader.load(async (loader) => {
         layer9: PIXI.Texture.from("assets/Parallax/layer09_Sky.png"),
         laserSound: await audioContext.decodeAudioData(await (await fetch("assets/laserShoot.wav")).arrayBuffer()),
         explosion: await audioContext.decodeAudioData(await (await fetch("assets/explosion.wav")).arrayBuffer()),
+        bgm: await audioContext.decodeAudioData(await (await fetch("assets/My Song 25.wav")).arrayBuffer()),
     }, app.screen, audioContext);
     
-    let t = 0
-    app.ticker.add(dt => {
+    let playingBgm = false
+    app.ticker.add(() => {
 
         if (game.gameOver) {
             menuStage.visible = true
@@ -77,6 +78,11 @@ app.loader.load(async (loader) => {
         if (menu.gameHasStarted) {
             menuStage.visible = false
             gameStage.visible = true
+
+            if (!playingBgm) {
+                playingBgm = true
+                game.playSound(game.resources.bgm, 0.75, true)
+            }
 
             game.update()
             game.draw()
