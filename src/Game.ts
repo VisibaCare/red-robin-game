@@ -11,6 +11,15 @@ export interface GameResources {
     playerBulletTexture: PIXI.Texture
     enemyTexture: PIXI.Texture
     backgroundTexture: PIXI.Texture
+
+    layer2: PIXI.Texture
+    layer3: PIXI.Texture
+    layer4: PIXI.Texture
+    layer5: PIXI.Texture
+    layer6: PIXI.Texture
+    layer7: PIXI.Texture
+    layer8: PIXI.Texture
+    layer9: PIXI.Texture
 }
 
 export class Game {
@@ -38,7 +47,7 @@ export class Game {
         this.resources = resources
         this.app = app
         this.player = new Player(this)
-        this.background = new Background(this, resources.backgroundTexture)
+        this.background = new Background(this)
         this.enemies = []
         this.time = 0
         this.pressedKeys = new Set()
