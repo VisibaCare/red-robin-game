@@ -37,6 +37,7 @@ app.loader.load((loader) => {
         enemyTexture: PIXI.Texture.from("assets/VC_Act.png"),
 		backgroundTexture: PIXI.Texture.from("assets/platformer_background_2.png"),
 
+        layer1: PIXI.Texture.from("assets/Parallax/layer01_Clouds_1.png"),
         layer2: PIXI.Texture.from("assets/Parallax/layer02_Clouds_2.png"),
         layer3: PIXI.Texture.from("assets/Parallax/layer03_Clouds_3.png"),
         layer4: PIXI.Texture.from("assets/Parallax/layer04_Path.png"),

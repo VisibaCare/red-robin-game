@@ -12,6 +12,7 @@ export interface GameResources {
     enemyTexture: PIXI.Texture
     backgroundTexture: PIXI.Texture
 
+    layer1: PIXI.Texture
     layer2: PIXI.Texture
     layer3: PIXI.Texture
     layer4: PIXI.Texture
@@ -139,7 +140,7 @@ export class Game {
 Player bullet count: ${this.playerBullets.length}
 Score: ${this.score}
 HP: ${this.player.hp}
-Invulnerable: ${this.player.invulnerableAfterDamageCooldown > 0} 
+Invulnerable: ${this.player.invulnerableAfterDamageCooldown > 0}
 `
     }
 
