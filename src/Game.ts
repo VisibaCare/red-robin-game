@@ -87,11 +87,7 @@ export class Game {
 
             for (const playerBullet of this.playerBullets) {
 
-                var dx = (enemy.x + enemy.hitboxRadius) - (playerBullet.x + playerBullet.hitboxRadius);
-                var dy = (enemy.y + enemy.hitboxRadius) - (playerBullet.y + playerBullet.hitboxRadius);
-                var distance = Math.sqrt(dx * dx + dy * dy);
-
-                if (distance < enemy.hitboxRadius + playerBullet.hitboxRadius) {
+                if (this._hasCollided(playerBullet, enemy)) {
                     // collision detected!
                     enemy.onCollideWithPlayerBullet(this)
                     playerBullet.onCollideWithEnemy()
@@ -99,7 +95,13 @@ export class Game {
                 }
             }
 
-
+            if (!enemy.shouldDestroy) {
+                if (this._hasCollided(enemy, this.player)) {
+                    // collision detected!
+                    this.player.onCollideWithEnemy()
+                    console.log('player collided');
+                }
+            }
         }
 
         if (this.time % 30 === 0) {
@@ -136,6 +138,8 @@ export class Game {
         this.debugElement.textContent = `
 Player bullet count: ${this.playerBullets.length}
 Score: ${this.score}
+HP: ${this.player.hp}
+Invulnerable: ${this.player.invulnerableAfterDamageCooldown > 0} 
 `
     }
 
@@ -185,6 +189,15 @@ Score: ${this.score}
         enemy.circle.x = enemy.x
         enemy.circle.y = enemy.y
         console.log(enemy)
+    }
+
+    private _hasCollided(first: { x: number, y: number, hitboxRadius: number }, second: { x: number, y: number, hitboxRadius: number }): boolean {
+
+        var dx = (first.x + first.hitboxRadius) - (second.x + second.hitboxRadius);
+        var dy = (first.y + first.hitboxRadius) - (second.y + second.hitboxRadius);
+        var distance = Math.sqrt(dx * dx + dy * dy);
+
+        return distance < first.hitboxRadius + second.hitboxRadius;
     }
 }
 
