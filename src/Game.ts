@@ -119,17 +119,23 @@ export class Player {
     }
 
     update(game: Game): void {
-        if (game.pressedKeys.has("ArrowLeft")) {
-            this.x -= 5
+        if (game.pressedKeys.has("ArrowLeft") && this.x > 0) {
+            this.x -= 5;
         }
-        if (game.pressedKeys.has("ArrowRight")) {
-            this.x += 5
+        if (
+            game.pressedKeys.has("ArrowRight") &&
+            this.x < game.app.screen.width
+        ) {
+            this.x += 5;
         }
-        if (game.pressedKeys.has("ArrowUp")) {
-            this.y -= 5
+        if (game.pressedKeys.has("ArrowUp") && this.y > 0) {
+            this.y -= 5;
         }
-        if (game.pressedKeys.has("ArrowDown")) {
-            this.y += 5
+        if (
+            game.pressedKeys.has("ArrowDown") &&
+            this.y < game.app.screen.height
+        ) {
+            this.y += 5;
         }
 
         if (game.pressedKeys.has("Space") && this.shotCooldown === 0) {
