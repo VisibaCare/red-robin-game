@@ -36,6 +36,16 @@ app.loader.load((loader) => {
         playerBulletTexture: PIXI.Texture.from("assets/VC_Grow.png"),
         enemyTexture: PIXI.Texture.from("assets/VC_Act.png"),
 		backgroundTexture: PIXI.Texture.from("assets/platformer_background_2.png"),
+
+        layer2: PIXI.Texture.from("assets/Parallax/layer02_Clouds_2.png"),
+        layer3: PIXI.Texture.from("assets/Parallax/layer03_Clouds_3.png"),
+        layer4: PIXI.Texture.from("assets/Parallax/layer04_Path.png"),
+        layer5: PIXI.Texture.from("assets/Parallax/layer05_Castle.png"),
+        layer6: PIXI.Texture.from("assets/Parallax/layer06_Stars_3.png"),
+        layer7: PIXI.Texture.from("assets/Parallax/layer07_Stars_2.png"),
+        layer8: PIXI.Texture.from("assets/Parallax/layer08_Stars_1.png"),
+        layer9: PIXI.Texture.from("assets/Parallax/layer09_Sky.png")
+        ,
     })
     
     let t = 0
