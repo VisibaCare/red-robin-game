@@ -4,6 +4,7 @@ export interface GameResources {
     playerTexture: PIXI.Texture
     playerBulletTexture: PIXI.Texture
     enemyTexture: PIXI.Texture
+    backgroundTexture: PIXI.Texture
 }
 
 export class Game {
@@ -72,7 +73,7 @@ export class Game {
                 var dx = (enemy.x + enemy.hitboxRadius) - (playerBullet.x + playerBullet.hitboxRadius);
                 var dy = (enemy.y + enemy.hitboxRadius) - (playerBullet.y + playerBullet.hitboxRadius);
                 var distance = Math.sqrt(dx * dx + dy * dy);
-            
+
                 if (distance < enemy.hitboxRadius + playerBullet.hitboxRadius) {
                     // collision detected!
                     enemy.onCollideWithPlayerBullet(this)
@@ -82,7 +83,7 @@ export class Game {
             }
         }
 
-        
+
         if (this.time % 30 === 0) {
             this._spawnEnemy()
         }
@@ -109,7 +110,26 @@ export class Game {
         this.debugElement.textContent = `
 Player bullet count: ${this.playerBullets.length}
 Score: ${this.score}
-`
+`}
+    private _spawnEnemy(): void {
+        const x = this.app.screen.width
+        const y = (this.app.screen.height / 2) * Math.random() + this.app.screen.height / 4
+        const vx = -(1 + Math.random() * 9)
+        const vy = Math.random() * 4 - 2
+        const enemy = new Enemy(this, this.resources.enemyTexture)
+        this.enemies.push(enemy)
+        enemy.x = x
+        enemy.y = y
+        enemy.vx = vx
+        enemy.vy = vy
+        enemy.sprite.x = enemy.x
+        enemy.sprite.y = enemy.y
+        enemy.circle.x = enemy.x
+        enemy.circle.y = enemy.y
+        console.log(enemy)
+    }
+}
+
 export class Background {
     backgroundSprite: PIXI.TilingSprite;
 
@@ -131,24 +151,6 @@ export class Background {
     update(game: Game): void {
         this.backgroundSprite.tilePosition.x -= 0.128;
         requestAnimationFrame(game.update);
-    }
-
-    private _spawnEnemy(): void {
-        const x = this.app.screen.width
-        const y = (this.app.screen.height / 2) * Math.random() + this.app.screen.height / 4
-        const vx = -(1 + Math.random() * 9)
-        const vy = Math.random() * 4 - 2
-        const enemy = new Enemy(this, this.resources.enemyTexture)
-        this.enemies.push(enemy)
-        enemy.x = x
-        enemy.y = y
-        enemy.vx = vx
-        enemy.vy = vy
-        enemy.sprite.x = enemy.x
-        enemy.sprite.y = enemy.y
-        enemy.circle.x = enemy.x
-        enemy.circle.y = enemy.y
-        console.log(enemy)
     }
 }
 
