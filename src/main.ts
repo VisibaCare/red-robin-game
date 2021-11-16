@@ -24,7 +24,10 @@ document.body.appendChild(app.view)
 //     app.stage.addChild(sprite)
 // }
 
-const game = new Game(app, PIXI.Sprite.from("assets/Red_Robin.png"))
+const game = new Game(app, {
+    playerTexture: PIXI.Texture.from("assets/Red_Robin.png"),
+    playerBulletTexture: PIXI.Texture.from("assets/VC_Grow.png"),
+})
 
 let t = 0
 app.ticker.add(dt => {
