@@ -14,6 +14,7 @@ const sprites = [
     PIXI.Sprite.from("assets/VC_Care.png"),
     PIXI.Sprite.from("assets/VC_Act.png"),
     PIXI.Sprite.from("assets/VC_Grow.png"),
+    PIXI.Sprite.from("assets/Red_Robin.png")
 ]
 
 for (const sprite of sprites) {
