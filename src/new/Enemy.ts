@@ -88,7 +88,7 @@ abstract class BaseEnemy implements Enemy {
     }
 }
 
-export class Level1Enemy extends BaseEnemy {
+export class SimpleShootingEnemy extends BaseEnemy {
     vx: number
     vy: number
     shotTimer: number

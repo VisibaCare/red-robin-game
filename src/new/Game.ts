@@ -3,7 +3,7 @@ import { PlayerBullet } from "./PlayerBullet"
 import { Background } from "./Background"
 import { GameResources } from "./GameResources"
 import { Player } from "./Player"
-import { Enemy, Level1Enemy } from "./Enemy"
+import { Enemy, SimpleShootingEnemy } from "./Enemy"
 import { EnemyBullet } from "./EnemyBullet"
 
 export class Game {
@@ -13,6 +13,7 @@ export class Game {
     readonly audioContext: AudioContext
 
     readonly pressedKeys: Set<string>
+    musicAudioNode?: AudioBufferSourceNode
     debug: boolean
     playing: boolean
 
@@ -24,6 +25,8 @@ export class Game {
 
     time: number
     score: number
+
+    difficulty: number
 
     private readonly _keydownCallback: (e: KeyboardEvent) => void
     private readonly _keyupCallback: (e: KeyboardEvent) => void
@@ -37,10 +40,10 @@ export class Game {
         this.stage = stage
         this.screen = screen
         this.resources = resources
-
         this.audioContext = audioContext
-        this.pressedKeys = new Set()
 
+        this.pressedKeys = new Set()
+        this.musicAudioNode = undefined
         this.debug = false
         this.playing = false
 
@@ -52,6 +55,7 @@ export class Game {
 
         this.time = 0
         this.score = 0
+        this.difficulty = 0
 
         this._keydownCallback = e => {
             // Prevent scrolling the scrollbar
@@ -75,6 +79,8 @@ export class Game {
 
         this.debug = false
         this.playing = true
+
+        this.playMusic(this.resources.bgm, 0.75)
     }
 
     update(): void {
@@ -128,20 +134,27 @@ export class Game {
             return !eb.destroying
         })
 
-        this.time++
-        if (this.time % 30 === 0) {
-            // Spawn a random enemy
-            const x = this.screen.width + 100
-            const y = (0.8 * this.screen.height) * Math.random() + 0.1 * this.screen.height
-            const vx = -1 - Math.random() * 9
-            const vy = 2 - Math.random() * 4
-            const enemy = new Level1Enemy(this)
-            enemy.x = x
-            enemy.y = y
-            enemy.vx = vx
-            enemy.vy = vy
-            this.addEnemy(enemy)
+        // Spawn enemies
+        if (this.difficulty === 0) {
+            if (this.time % 60 === 0) {
+                // Spawn a random enemy
+                const direction = Math.PI / 8 * Math.random() - Math.PI - Math.PI / 16
+                const x = this.screen.width + 50
+                const y = (0.8 * this.screen.height) * Math.random() + 0.1 * this.screen.height
+                const v = 3 + Math.random() * 3
+                const vx = v * Math.cos(direction)
+                const vy = v * Math.sin(direction)
+                const enemy = new SimpleShootingEnemy(this)
+                enemy.x = x
+                enemy.y = y
+                enemy.vx = vx
+                enemy.vy = vy
+                this.addEnemy(enemy)
+            }
         }
+
+        this.time++
+
 
         // Debug
         if (this.pressedKeys.has("KeyD")) {
@@ -175,8 +188,7 @@ export class Game {
         this.enemyBullets.length = 0
 
         this.playing = false
-
-        console.log(this)
+        this.stopMusic()
     }
 
     addPlayerBullet(playerBullet: PlayerBullet): void {
@@ -192,12 +204,35 @@ export class Game {
     }
 
     playSound(sound: AudioBuffer, volume: number): void {
+        const node = this.audioContext.createBufferSource()
+        node.buffer = sound
+        const gain = this.audioContext.createGain()
+        gain.gain.value = volume
+        gain.connect(this.audioContext.destination)
+        node.connect(gain)
+        node.start()
+        node.onended = () => gain.disconnect()
     }
 
     playMusic(music: AudioBuffer, volume: number): void {
+        this.stopMusic()
+        this.musicAudioNode = this.audioContext.createBufferSource()
+        this.musicAudioNode.buffer = music
+        this.musicAudioNode.loop = true
+        const gain = this.audioContext.createGain()
+        gain.gain.value = volume
+        gain.connect(this.audioContext.destination)
+        this.musicAudioNode.connect(gain)
+        this.musicAudioNode.start()
+        this.musicAudioNode.onended = () => gain.disconnect()
     }
 
     stopMusic(): void {
+        if (this.musicAudioNode != undefined) {
+            this.musicAudioNode.stop()
+            this.musicAudioNode.disconnect()
+            this.musicAudioNode = undefined
+        }
     }
 
     private _hasCollided(
