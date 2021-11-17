@@ -13,6 +13,8 @@ export interface GameResources {
     enemyBulletTexture: PIXI.Texture
     backgroundTexture: PIXI.Texture
 
+    robinImage: PIXI.Texture
+
     layer1: PIXI.Texture
     layer2: PIXI.Texture
     layer3: PIXI.Texture
@@ -50,7 +52,8 @@ export class Game {
     debugElement: HTMLParagraphElement
 
     scoreText: PIXI.Text
-    hpText: PIXI.Text
+    lifeRobins: PIXI.Container;
+
 
     constructor(
         stage: PIXI.Container,
@@ -105,12 +108,20 @@ export class Game {
         this.scoreText.anchor.set(1, 0);
         stage.addChild(this.scoreText)
 
-        this.hpText = new PIXI.Text("3");
-        this.hpText.style = textStyle;
-        this.hpText.x = 20;
-        this.hpText.y = 10;
-        this.hpText.anchor.set(0, 0);
-        stage.addChild(this.hpText)
+        this.lifeRobins = new PIXI.Container
+
+        for (let lives = 0; lives < this.player.hp; lives++) {
+            let lifeRobin = new PIXI.Sprite(resources.robinImage)
+            lifeRobin.scale.set(0.125)
+
+            lifeRobin.x = 20;
+            lifeRobin.y = 10;
+            lifeRobin.x += + (lifeRobin.width + 20) * lives
+            lifeRobin.tint = 0xc3bdc9
+            this.lifeRobins.addChild(lifeRobin)
+        }
+        stage.addChild(this.lifeRobins)
+
     }
 
     update(): void {
@@ -187,11 +198,15 @@ export class Game {
             }
         }
 
+        if(this.lifeRobins.children.length > this.player.hp){
+            this.stage.removeChild(this.lifeRobins.children.pop()!)
+        }
+
         this.score++
         this.time++
 
         this.scoreText.text = this.score.toString()
-        this.hpText.text = this.player.hp.toString()
+
         if (this.gameOver) {
             this.end();
         }
