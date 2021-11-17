@@ -10,16 +10,12 @@ export class EndScreen {
     restartButton: PIXI.Graphics
     highScoreText: PIXI.Text
     newHighScoreText: PIXI.Text
-    menu: Menu
-    game: Game
-    hasUpdatedScore: boolean
+    shouldExit: boolean
 
-    constructor(stage: PIXI.Container, background: PIXI.Texture, screen: PIXI.Rectangle, menu: Menu, game: Game) {
+    constructor(stage: PIXI.Container, background: PIXI.Texture, screen: PIXI.Rectangle) {
 
         this.stage = stage;
         this.screen = screen;
-        this.menu = menu;
-        this.game = game;
 
         const highScore: number = parseInt(window.localStorage.getItem('highScore') ?? "0");
         const lastScore: number = parseInt(window.localStorage.getItem('lastScore') ?? "0");
@@ -76,7 +72,7 @@ export class EndScreen {
         bg.tilePosition.x = -433
         bg.tilePosition.y = -5
 
-        this.hasUpdatedScore = false;
+        this.shouldExit = false;
 
         stage.addChild(bg);
         stage.addChild(textPart1);
@@ -96,18 +92,10 @@ export class EndScreen {
         } else {
             this.newHighScoreText.visible = false;
         }
-
-        this.hasUpdatedScore = true;
-    }
-
-    goBackToMenu(): void {
-        this.menu.gameHasStarted = false;
-        this.game.gameOver = false;
-        this.hasUpdatedScore = false;
     }
 
     private _onClick(): void {
-        this.goBackToMenu();
+        this.shouldExit = true
     }
 
     private _onHover(): void {
