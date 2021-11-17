@@ -108,20 +108,24 @@ export class Game {
         this.scoreText.anchor.set(1, 0);
         stage.addChild(this.scoreText)
 
-        this.lifeRobins = new PIXI.Container
+        this.lifeRobins = new PIXI.Container;
+        this.initializeLifeCounter(resources.robinImage);
+
+    }
+
+    private initializeLifeCounter(robinPic: PIXI.Texture) {
 
         for (let lives = 0; lives < this.player.hp; lives++) {
-            let lifeRobin = new PIXI.Sprite(resources.robinImage)
-            lifeRobin.scale.set(0.125)
+            let lifeRobin = new PIXI.Sprite(robinPic);
+            lifeRobin.scale.set(0.125);
 
             lifeRobin.x = 20;
             lifeRobin.y = 10;
-            lifeRobin.x += + (lifeRobin.width + 20) * lives
-            lifeRobin.tint = 0xc3bdc9
-            this.lifeRobins.addChild(lifeRobin)
+            lifeRobin.x += +(lifeRobin.width + 20) * lives;
+            lifeRobin.tint = 0xc3bdc9;
+            this.lifeRobins.addChild(lifeRobin);
         }
-        stage.addChild(this.lifeRobins)
-
+        this.stage.addChild(this.lifeRobins);
     }
 
     update(): void {
@@ -201,7 +205,7 @@ export class Game {
         if(this.lifeRobins.children.length > this.player.hp){
             this.stage.removeChild(this.lifeRobins.children.pop()!)
         }
-        
+
         this.currentScore++
         this.time++
 
@@ -211,12 +215,14 @@ export class Game {
             this.end();
         }
 
-        this.debugElement.textContent = `
-Player bullet count: ${this.playerBullets.length}
-Score: ${this.currentScore}
-HP: ${this.player.hp}
-Invulnerable: ${this.player.invulnerableAfterDamageCooldown > 0}
-`
+        if(this.isDebug){
+            this.debugElement.textContent = `
+            Player bullet count: ${this.playerBullets.length}
+            Score: ${this.currentScore}
+            HP: ${this.player.hp}
+            Invulnerable: ${this.player.invulnerableAfterDamageCooldown > 0}
+            `
+        }
     }
 
     spawnPlayerBullet(x: number, y: number): void {
@@ -252,7 +258,7 @@ Invulnerable: ${this.player.invulnerableAfterDamageCooldown > 0}
     end(): void {
 
         const highScore = parseInt(window.localStorage.getItem("highScore") ?? "0");
-        
+
         if (this.currentScore > highScore) {
             window.localStorage.setItem('highScore', this.currentScore.toString());
         }
@@ -282,6 +288,9 @@ Invulnerable: ${this.player.invulnerableAfterDamageCooldown > 0}
 
         this.player.onDestroy(this);
         this.player = new Player(this);
+
+        this.lifeRobins.removeChildren()
+        this.initializeLifeCounter(this.resources.robinImage);
 
     }
 
