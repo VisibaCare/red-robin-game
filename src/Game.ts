@@ -49,6 +49,9 @@ export class Game {
     isDebug: boolean
     debugElement: HTMLParagraphElement
 
+    scoreText: PIXI.Text
+    hpText: PIXI.Text
+
     constructor(
         stage: PIXI.Container,
         resources: GameResources,
@@ -84,6 +87,30 @@ export class Game {
         this.debugElement = document.createElement("p")
         this.debugElement.style.whiteSpace = "pre"
         document.body.appendChild(this.debugElement)
+
+        const textStyle = new PIXI.TextStyle({
+            fill: "white",
+            fontFamily: "\"Courier New\", Courier, monospace",
+            fontSize: 40,
+            fontVariant: "small-caps",
+            fontWeight: "bold",
+            lineHeight: 50,
+            align: "center"
+        });
+
+        this.scoreText = new PIXI.Text("0");
+        this.scoreText.style = textStyle;
+        this.scoreText.x = this.screen.width - 20;
+        this.scoreText.y = 10;
+        this.scoreText.anchor.set(1, 0);
+        stage.addChild(this.scoreText)
+
+        this.hpText = new PIXI.Text("3");
+        this.hpText.style = textStyle;
+        this.hpText.x = 20;
+        this.hpText.y = 10;
+        this.hpText.anchor.set(0, 0);
+        stage.addChild(this.hpText)
     }
 
     update(): void {
@@ -163,6 +190,8 @@ export class Game {
         this.score++
         this.time++
 
+        this.scoreText.text = this.score.toString()
+        this.hpText.text = this.player.hp.toString()
         if (this.gameOver) {
             this.end();
         }
