@@ -41,6 +41,15 @@ export class Menu {
 
         button.addChild(playText);
 
+        const creditText = new PIXI.Text("By Emily Inns, Carl Åstholm and Tomasz Baslyk");
+
+        creditText.style = TextHelper.getSecondaryTextStyle();
+        creditText.anchor.set(0.5)
+        creditText.x = screen.width / 2
+        creditText.y = screen.height - creditText.height /2
+        creditText.style.fontSize = 28
+        creditText.style.fill = "white"
+
         button.interactive = true
         button.on('pointerdown', () => this._onClick())
         button.on('pointerover', () => this._onHover())
@@ -60,6 +69,7 @@ export class Menu {
         stage.addChild(textPart1);
         stage.addChild(textPart2);
         stage.addChild(button);
+        stage.addChild(creditText);
 
     }
 
