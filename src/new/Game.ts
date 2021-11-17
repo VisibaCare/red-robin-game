@@ -4,6 +4,7 @@ import { Background } from "./Background"
 import { GameResources } from "./GameResources"
 import { Player } from "./Player"
 import { Enemy, Level1Enemy } from "./Enemy"
+import { EnemyBullet } from "./EnemyBullet"
 
 export class Game {
     readonly stage: PIXI.Container
@@ -19,6 +20,7 @@ export class Game {
     player?: Player
     playerBullets: PlayerBullet[]
     enemies: Enemy[]
+    enemyBullets: EnemyBullet[]
 
     time: number
     score: number
@@ -46,6 +48,7 @@ export class Game {
         this.player = undefined
         this.playerBullets = []
         this.enemies = []
+        this.enemyBullets = []
 
         this.time = 0
         this.score = 0
@@ -79,6 +82,7 @@ export class Game {
         this.player?.onUpdate(this)
         this.playerBullets.forEach(b => b.onUpdate(this))
         this.enemies.forEach(e => e.onUpdate(this))
+        this.enemyBullets.forEach(eb => eb.onUpdate(this))
 
         // Collision check
         for (const enemy of this.enemies) {
@@ -90,6 +94,14 @@ export class Game {
             }
             if (!enemy.destroying && this.player != undefined && this._hasCollided(enemy, this.player)) {
                 this.player.onCollideWithEnemyOrEnemyBullet(this)
+            }
+        }
+        if (this.player != undefined) {
+            for (const enemyBullet of this.enemyBullets) {
+                if (this._hasCollided(enemyBullet, this.player)) {
+                    enemyBullet.onCollideWithPlayer()
+                    this.player.onCollideWithEnemyOrEnemyBullet(this)
+                }
             }
         }
 
@@ -108,10 +120,27 @@ export class Game {
 
             return !e.destroying
         })
+        this.enemyBullets = this.enemyBullets.filter(eb => {
+            if (eb.destroying) {
+                eb.onDestroy(this)
+            }
+
+            return !eb.destroying
+        })
 
         this.time++
         if (this.time % 30 === 0) {
-            this.spawnRandomEnemy()
+            // Spawn a random enemy
+            const x = this.screen.width + 100
+            const y = (0.8 * this.screen.height) * Math.random() + 0.1 * this.screen.height
+            const vx = -1 - Math.random() * 9
+            const vy = 2 - Math.random() * 4
+            const enemy = new Level1Enemy(this)
+            enemy.x = x
+            enemy.y = y
+            enemy.vx = vx
+            enemy.vy = vy
+            this.addEnemy(enemy)
         }
 
         // Debug
@@ -124,8 +153,9 @@ export class Game {
     draw(): void {
         this.player?.onDraw(this)
         // background doesn't use onDraw
-        this.playerBullets.forEach(b => b.onDraw(this))
+        this.playerBullets.forEach(pb => pb.onDraw(this))
         this.enemies.forEach(e => e.onDraw(this))
+        this.enemyBullets.forEach(eb => eb.onDraw(this))
     }
 
     end(): void {
@@ -137,39 +167,28 @@ export class Game {
         this.background = undefined
         this.player?.onDestroy(this)
         this.player = undefined
-        this.playerBullets.forEach(b => b.onDestroy(this))
+        this.playerBullets.forEach(pb => pb.onDestroy(this))
         this.playerBullets.length = 0
         this.enemies.forEach(e => e.onDestroy(this))
         this.enemies.length = 0
+        this.enemyBullets.forEach(eb => eb.onDestroy(this))
+        this.enemyBullets.length = 0
 
         this.playing = false
 
         console.log(this)
     }
 
-    spawnPlayerBullet(x: number, y: number, vx: number, vy: number): void {
-        const bullet = new PlayerBullet(this)
-        bullet.x = x
-        bullet.y = y
-        bullet.vx = vx
-        bullet.vy = vy
-        this.playerBullets.push(bullet)
+    addPlayerBullet(playerBullet: PlayerBullet): void {
+        this.playerBullets.push(playerBullet)
     }
 
-    spawnRandomEnemy(): void {
-        const x = this.screen.width + 100
-        const y = (0.8 * this.screen.height) * Math.random() + 0.1 * this.screen.height
-        const vx = -1 - Math.random() * 9
-        const vy = 2 - Math.random() * 4
-        const enemy = new Level1Enemy(this)
-        enemy.x = x
-        enemy.y = y
-        enemy.vx = vx
-        enemy.vy = vy
+    addEnemy(enemy: Enemy): void {
         this.enemies.push(enemy)
     }
 
-    spawnEnemyBullet(x: number, y: number, vx: number, vy: number): void {
+    addEnemyBullet(enemyBullet: EnemyBullet): void {
+        this.enemyBullets.push(enemyBullet)
     }
 
     playSound(sound: AudioBuffer, volume: number): void {

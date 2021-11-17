@@ -1,6 +1,7 @@
 import * as PIXI from "pixi.js"
 import * as PIXIgif from '@pixi/gif'
 import { Game } from "./Game"
+import { PlayerBullet } from "./PlayerBullet"
 
 export class Player {
     readonly sprite: PIXIgif.AnimatedGIF
@@ -84,7 +85,12 @@ export class Player {
             this.shotCooldown--
         }
         if (this.shotCooldown <= 0 && (game.pressedKeys.has("KeyZ") || game.pressedKeys.has("Space"))) {
-            game.spawnPlayerBullet(this.x, this.y, 10, 0)
+            const bullet = new PlayerBullet(game)
+            bullet.x = this.x
+            bullet.y = this.y
+            bullet.vx = 10
+            bullet.vy = 0
+            game.addPlayerBullet(bullet)
             game.playSound(game.resources.laserSound, 0.25)
             this.shotCooldown = 10
         }
