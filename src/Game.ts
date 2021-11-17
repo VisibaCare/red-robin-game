@@ -13,6 +13,8 @@ export interface GameResources {
     enemyBulletTexture: PIXI.Texture
     backgroundTexture: PIXI.Texture
 
+    robinImage: PIXI.Texture
+
     layer1: PIXI.Texture
     layer2: PIXI.Texture
     layer3: PIXI.Texture
@@ -49,6 +51,10 @@ export class Game {
     isDebug: boolean
     debugElement: HTMLParagraphElement
 
+    scoreText: PIXI.Text
+    lifeRobins: PIXI.Container;
+
+
     constructor(
         stage: PIXI.Container,
         resources: GameResources,
@@ -84,6 +90,37 @@ export class Game {
         this.debugElement = document.createElement("p")
         this.debugElement.style.whiteSpace = "pre"
         document.body.appendChild(this.debugElement)
+
+        const textStyle = new PIXI.TextStyle({
+            fill: "white",
+            fontFamily: "\"Courier New\", Courier, monospace",
+            fontSize: 40,
+            fontVariant: "small-caps",
+            fontWeight: "bold",
+            lineHeight: 50,
+            align: "center"
+        });
+
+        this.scoreText = new PIXI.Text("0");
+        this.scoreText.style = textStyle;
+        this.scoreText.x = this.screen.width - 20;
+        this.scoreText.y = 10;
+        this.scoreText.anchor.set(1, 0);
+        stage.addChild(this.scoreText)
+
+        this.lifeRobins = new PIXI.Container
+
+        for (let lives = 0; lives < this.player.hp; lives++) {
+            let lifeRobin = new PIXI.Sprite(resources.robinImage)
+            lifeRobin.scale.set(0.125)
+
+            lifeRobin.x = 20;
+            lifeRobin.y = 10;
+            lifeRobin.x += + (lifeRobin.width + 20) * lives
+            lifeRobin.tint = 0xc3bdc9
+            this.lifeRobins.addChild(lifeRobin)
+        }
+        stage.addChild(this.lifeRobins)
 
     }
 
@@ -161,8 +198,14 @@ export class Game {
             }
         }
 
+        if(this.lifeRobins.children.length > this.player.hp){
+            this.stage.removeChild(this.lifeRobins.children.pop()!)
+        }
+        
         this.currentScore++
         this.time++
+
+        this.scoreText.text = this.currentScore.toString()
 
         if (this.gameOver) {
             this.end();

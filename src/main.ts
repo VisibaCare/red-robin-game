@@ -48,6 +48,7 @@ app.loader.load(async (loader) => {
         enemyTexture: PIXI.Texture.from("assets/VC_Act.png"),
         enemyBulletTexture: PIXI.Texture.from("assets/VC_Grow.png"),
         backgroundTexture: PIXI.Texture.from("assets/platformer_background_2.png"),
+        robinImage: PIXI.Texture.from("assets/Red_Robin.png"),
 
         layer1: PIXI.Texture.from("assets/Parallax/layer01_Clouds_1.png"),
         layer2: PIXI.Texture.from("assets/Parallax/layer02_Clouds_2.png"),
