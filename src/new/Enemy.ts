@@ -1,5 +1,5 @@
 import * as PIXI from "pixi.js"
-import { Level1Bullet } from "./EnemyBullet"
+import { StraightMovingBullet } from "./EnemyBullet"
 import { Game } from "./Game"
 
 export interface Enemy {
@@ -38,8 +38,8 @@ abstract class BaseEnemy implements Enemy {
         this.y = 0
         this.rotation = 0
         this.hitboxRadius = 25
-        this.hp = 3
-        this.maxHp = 3
+        this.hp = 5
+        this.maxHp = 5
         this.scoreValue = 1000
         this.destroying = false
     }
@@ -110,15 +110,100 @@ export class SimpleShootingEnemy extends BaseEnemy {
             this.shotTimer--
         }
         if (this.shotTimer <= 0) {
-            const bullet = new Level1Bullet(game)
+            const bullet = new StraightMovingBullet(game)
             bullet.x = this.x
             bullet.y = this.y
-            bullet.vx = this.vx * 1.5
-            bullet.vy = this.vy * 1.5
+            const v = Math.sqrt(this.vx ** 2 + this.vy ** 2)
+            bullet.vx = (2 + v) * Math.cos(this.rotation)
+            bullet.vy = (2 + v) * Math.sin(this.rotation)
             game.addEnemyBullet(bullet)
             this.shotTimer = 100
         }
 
         this.destroyIfOutsideScreen(game)
     }
+}
+
+export class AimingShootingEnemy extends BaseEnemy {
+    sourceX: number
+    sourceY: number
+    targetX: number
+    targetY: number
+    movementT: number
+    movementMaxT: number
+    shotTimer: number
+
+    constructor(game: Game) {
+        super(game)
+        this.sourceX = 0
+        this.sourceY = 0
+        this.targetX = 0
+        this.targetY = 0
+        this.movementT = 0
+        this.movementMaxT = 120
+        this.shotTimer = 0
+        this.maxHp = 3
+        this.hp = 3
+    }
+
+    onUpdate(game: Game): void {
+        // Movement
+        this.x = easeOutCubic(this.sourceX, this.targetX, this.movementT / this.movementMaxT)
+        this.y = easeOutCubic(this.sourceY, this.targetY, this.movementT / this.movementMaxT)
+        console.log(this)
+        if (game.player != undefined) {
+            this.rotation = Math.atan2(game.player.y - this.y, game.player.x - this.x)
+        }
+
+        if (this.shotTimer > 0) {
+            this.shotTimer--
+        }
+        if (this.shotTimer <= 0) {
+            this.spawnBullets(game)
+            this.resetShotTimer()
+        }
+        if (this.movementT < this.movementMaxT) {
+            this.movementT++
+        }
+
+        this.destroyIfOutsideScreen(game)
+    }
+
+    spawnBullets(game: Game): void {
+        const bullet = new StraightMovingBullet(game)
+        bullet.x = this.x
+        bullet.y = this.y
+        bullet.vx = (4) * Math.cos(this.rotation)
+        bullet.vy = (4) * Math.sin(this.rotation)
+        game.addEnemyBullet(bullet)
+    }
+
+    resetShotTimer(): void {
+        this.shotTimer = 50
+    }
+}
+
+export class AimingShotgunEnemy extends AimingShootingEnemy {
+    override spawnBullets(game: Game): void {
+        console.log("spawn")
+        for (let i = 0; i < 3; i++) {
+            const bullet = new StraightMovingBullet(game)
+            bullet.x = this.x
+            bullet.y = this.y
+            const direction = this.rotation + 0.4 * (1 - i)
+            bullet.vx = (4) * Math.cos(direction)
+            bullet.vy = (4) * Math.sin(direction)
+            game.addEnemyBullet(bullet)
+        }
+    }
+
+    override resetShotTimer(): void {
+        this.shotTimer = 100
+    }
+}
+
+function easeOutCubic(a: number, b: number, t: number): number {
+    const u = 1 - Math.pow(1 - t, 3)
+
+    return (1 - u) * a + u * b
 }

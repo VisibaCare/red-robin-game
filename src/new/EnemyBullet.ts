@@ -72,7 +72,7 @@ abstract class BaseBullet implements EnemyBullet {
     }
 }
 
-export class Level1Bullet extends BaseBullet {
+export class StraightMovingBullet extends BaseBullet {
     vx: number
     vy: number
 

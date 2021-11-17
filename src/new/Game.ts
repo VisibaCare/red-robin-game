@@ -3,7 +3,7 @@ import { PlayerBullet } from "./PlayerBullet"
 import { Background } from "./Background"
 import { GameResources } from "./GameResources"
 import { Player } from "./Player"
-import { Enemy, SimpleShootingEnemy } from "./Enemy"
+import { AimingShootingEnemy, AimingShotgunEnemy, Enemy, SimpleShootingEnemy } from "./Enemy"
 import { EnemyBullet } from "./EnemyBullet"
 
 export class Game {
@@ -27,6 +27,7 @@ export class Game {
     score: number
 
     difficulty: number
+    difficultyTimer: number
 
     private readonly _keydownCallback: (e: KeyboardEvent) => void
     private readonly _keyupCallback: (e: KeyboardEvent) => void
@@ -56,6 +57,7 @@ export class Game {
         this.time = 0
         this.score = 0
         this.difficulty = 0
+        this.difficultyTimer = 0
 
         this._keydownCallback = e => {
             // Prevent scrolling the scrollbar
@@ -76,6 +78,9 @@ export class Game {
         this.player = new Player(this)
 
         this.time = 0
+        this.score = 0
+        this.difficulty = 0
+        this.difficultyTimer = 600
 
         this.debug = false
         this.playing = true
@@ -134,27 +139,48 @@ export class Game {
             return !eb.destroying
         })
 
-        // Spawn enemies
+        this.time++
+        if (this.difficultyTimer > 0) {
+            this.difficultyTimer--
+        }
+        if (this.difficultyTimer <= 0) {
+            this.difficulty++
+            this.difficultyTimer = 600
+        }
+        // Spawn enemies according to difficulty
         if (this.difficulty === 0) {
-            if (this.time % 60 === 0) {
-                // Spawn a random enemy
-                const direction = Math.PI / 8 * Math.random() - Math.PI - Math.PI / 16
-                const x = this.screen.width + 50
-                const y = (0.8 * this.screen.height) * Math.random() + 0.1 * this.screen.height
-                const v = 3 + Math.random() * 3
-                const vx = v * Math.cos(direction)
-                const vy = v * Math.sin(direction)
-                const enemy = new SimpleShootingEnemy(this)
-                enemy.x = x
-                enemy.y = y
-                enemy.vx = vx
-                enemy.vy = vy
-                this.addEnemy(enemy)
+            if (this.time !== 0 && this.time % 90 === 0) {
+                this._spawnSimpleEnemy()
+            }
+        } else if (this.difficulty === 1) {
+            if (this.time % 45 === 0) {
+                this._spawnSimpleEnemy()
+            }
+        } else if (this.difficulty === 2) {
+            if (this.time % 90 === 0) {
+                this._spawnAimingEnemy(false)
+            }
+        } else if (this.difficulty === 3) {
+            if (this.time % 90 === 0) {
+                this._spawnAimingEnemy(false)
+            }
+            if ((this.time + 45) % 90 === 0) {
+                this._spawnSimpleEnemy()
+            }
+        } else if (this.difficulty === 4) {
+            if (this.time % 90 === 0) {
+                this._spawnAimingEnemy(true)
+            }
+        } else {
+            if (this.time % 90 === 0) {
+                this._spawnAimingEnemy(true)
+            }
+            if ((this.time + 45) % 90 === 0) {
+                this._spawnSimpleEnemy()
             }
         }
 
-        this.time++
-
+        this.score++
 
         // Debug
         if (this.pressedKeys.has("KeyD")) {
@@ -244,5 +270,27 @@ export class Game {
         var distance = Math.sqrt(dx * dx + dy * dy);
 
         return distance < first.hitboxRadius + second.hitboxRadius;
+    }
+
+    private _spawnSimpleEnemy(): void {
+        const direction = Math.PI / 8 * Math.random() - Math.PI - Math.PI / 16
+        const v = 3 + Math.random() * 2
+        const enemy = new SimpleShootingEnemy(this)
+        enemy.x = this.screen.width + 50
+        enemy.y = (0.8 * this.screen.height) * Math.random() + 0.1 * this.screen.height
+        enemy.vx = v * Math.cos(direction)
+        enemy.vy = v * Math.sin(direction)
+        this.addEnemy(enemy)
+    }
+
+    private _spawnAimingEnemy(shotgun: boolean): void {
+        const enemy = shotgun ? new AimingShotgunEnemy(this) : new AimingShootingEnemy(this)
+        enemy.x = this.screen.width + 50
+        enemy.y = (0.8 * this.screen.height) * Math.random() + 0.1 * this.screen.height
+        enemy.sourceX = enemy.x
+        enemy.sourceY = enemy.y
+        enemy.targetX = this.screen.width * (0.6 + Math.random() * 0.3) 
+        enemy.targetY = enemy.y
+        this.addEnemy(enemy)
     }
 }
