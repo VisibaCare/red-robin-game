@@ -3,6 +3,7 @@ import { Game } from "./Game"
 import * as PIXIgif from '@pixi/gif';
 import { WebfontLoaderPlugin } from "pixi-webfont-loader";
 import { Menu } from "./Menu";
+import { EndScreen } from "./EndScreen";
 
 PIXI.Loader.registerPlugin(PIXIgif.AnimatedGIFLoader);
 PIXI.Loader.registerPlugin(WebfontLoaderPlugin);
@@ -18,22 +19,8 @@ app.ticker.maxFPS = 60
 app.stage.sortableChildren = true
 document.body.appendChild(app.view)
 
-// const sprites: PIXI.Sprite[] = [
-//     PIXI.Sprite.from("assets/VC_Care.png"),
-//     PIXI.Sprite.from("assets/VC_Act.png"),
-//     PIXI.Sprite.from("assets/VC_Grow.png"),
-//     PIXI.Sprite.from("assets/Red_Robin.png")
-// ]
-
-// for (const sprite of sprites) {
-//     sprite.anchor.set(0.5)
-//     sprite.scale.set(0.25)
-//     app.stage.addChild(sprite)
-// }
-
-
 app.loader.add('image', 'assets/Red-Robin-flying.gif');
-app.loader.add('test', 'assets/CedarvilleCursive-Regular.ttf')
+app.loader.add('cedarvilleCursive', 'assets/CedarvilleCursive-Regular.ttf')
 app.loader.load(async (loader) => {
 
     const audioContext = new AudioContext()
@@ -42,12 +29,18 @@ app.loader.load(async (loader) => {
     menuStage.visible = true
     app.stage.addChild(menuStage)
 
-    const menu = new Menu(menuStage, PIXI.Texture.from("assets/platformer_background_2.png"), app.screen)
 
     const gameStage = new PIXI.Container()
     gameStage.visible = false
     gameStage.sortableChildren = true
     app.stage.addChild(gameStage)
+
+    const endStage = new PIXI.Container()
+    endStage.visible = false
+    endStage.sortableChildren = true
+    app.stage.addChild(endStage)
+
+    const menu = new Menu(menuStage, PIXI.Texture.from("assets/platformer_background_2.png"), app.screen)
 
     const game = new Game(gameStage, {
         playerGif: loader.resources.image!.animation!,
@@ -69,21 +62,32 @@ app.loader.load(async (loader) => {
         explosion: await audioContext.decodeAudioData(await (await fetch("assets/explosion.wav")).arrayBuffer()),
         bgm: await audioContext.decodeAudioData(await (await fetch("assets/My Song 25.wav")).arrayBuffer()),
     }, app.screen, audioContext);
-    
+
+    const endScreen = new EndScreen(endStage, PIXI.Texture.from("assets/platformer_background_2.png"), app.screen, menu, game);
+
     let playingBgm = false
     app.ticker.add(() => {
 
-        if (game.gameOver) {
+        if (!menu.gameHasStarted) {
+
             menuStage.visible = true
             gameStage.visible = false
+            endStage.visible = false
 
-            menu.gameHasStarted = false
-            game.gameOver = false
-        }
+        } else if (game.gameOver) {
 
-        if (menu.gameHasStarted) {
+            menuStage.visible = false
+            gameStage.visible = false
+            endStage.visible = true
+
+            if (!endScreen.hasUpdatedScore) {
+                endScreen.update()
+            }
+
+        } else {
             menuStage.visible = false
             gameStage.visible = true
+            endStage.visible = false
 
             if (!playingBgm) {
                 playingBgm = true

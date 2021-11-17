@@ -30,7 +30,7 @@ export interface GameResources {
 
 export class Game {
     time: number
-    score: number
+    currentScore: number
     gameOver: boolean
     audioContext: AudioContext
 
@@ -56,7 +56,7 @@ export class Game {
         audioContext: AudioContext,
     ) {
         this.isDebug = false
-        this.score = 0
+        this.currentScore = 0
         this.resources = resources
         this.audioContext = audioContext
         this.stage = stage
@@ -84,6 +84,7 @@ export class Game {
         this.debugElement = document.createElement("p")
         this.debugElement.style.whiteSpace = "pre"
         document.body.appendChild(this.debugElement)
+
     }
 
     update(): void {
@@ -160,7 +161,7 @@ export class Game {
             }
         }
 
-        this.score++
+        this.currentScore++
         this.time++
 
         if (this.gameOver) {
@@ -169,7 +170,7 @@ export class Game {
 
         this.debugElement.textContent = `
 Player bullet count: ${this.playerBullets.length}
-Score: ${this.score}
+Score: ${this.currentScore}
 HP: ${this.player.hp}
 Invulnerable: ${this.player.invulnerableAfterDamageCooldown > 0}
 `
@@ -207,6 +208,16 @@ Invulnerable: ${this.player.invulnerableAfterDamageCooldown > 0}
 
     end(): void {
 
+        const highScore = parseInt(window.localStorage.getItem("highScore") ?? "0");
+        
+        if (this.currentScore > highScore) {
+            window.localStorage.setItem('highScore', this.currentScore.toString());
+        }
+
+        window.localStorage.setItem('lastScore', this.currentScore.toString());
+
+        this.currentScore = 0;
+
         for (let i = 0; i < this.playerBullets.length; i++) {
             const playerBullet = this.playerBullets[i]!
             playerBullet.onDestroy(this)
@@ -229,7 +240,6 @@ Invulnerable: ${this.player.invulnerableAfterDamageCooldown > 0}
         this.player.onDestroy(this);
         this.player = new Player(this);
 
-        this.score = 0;
     }
 
     playSound(sound: AudioBuffer, volume: number, looping: boolean = false): void {

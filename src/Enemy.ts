@@ -59,7 +59,7 @@ export class Enemy {
     onCollideWithPlayerBullet(game: Game): void {
         this.hp -= 1
         if (this.hp === 0) {
-            game.score += 1000
+            game.currentScore += 1000
             this.shouldDestroy = true;
         }
     }
