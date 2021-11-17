@@ -3,6 +3,7 @@ import { PlayerBullet } from "./PlayerBullet"
 import { Background } from "./Background"
 import { GameResources } from "./GameResources"
 import { Player } from "./Player"
+import { Enemy, Level1Enemy } from "./Enemy"
 
 export class Game {
     readonly stage: PIXI.Container
@@ -17,8 +18,10 @@ export class Game {
     background?: Background
     player?: Player
     playerBullets: PlayerBullet[]
+    enemies: Enemy[]
 
     time: number
+    score: number
 
     private readonly _keydownCallback: (e: KeyboardEvent) => void
     private readonly _keyupCallback: (e: KeyboardEvent) => void
@@ -42,8 +45,10 @@ export class Game {
         this.background = undefined
         this.player = undefined
         this.playerBullets = []
+        this.enemies = []
 
         this.time = 0
+        this.score = 0
 
         this._keydownCallback = e => {
             // Prevent scrolling the scrollbar
@@ -73,19 +78,54 @@ export class Game {
         this.background?.onUpdate(this)
         this.player?.onUpdate(this)
         this.playerBullets.forEach(b => b.onUpdate(this))
+        this.enemies.forEach(e => e.onUpdate(this))
 
+        // Collision check
+        for (const enemy of this.enemies) {
+            for (const playerBullet of this.playerBullets) {
+                if (this._hasCollided(enemy, playerBullet)) {
+                    enemy.onCollideWithPlayerBullet(this)
+                    playerBullet.onCollideWithEnemy()
+                }
+            }
+            if (!enemy.destroying && this.player != undefined && this._hasCollided(enemy, this.player)) {
+                this.player.onCollideWithEnemyOrEnemyBullet(this)
+            }
+        }
+
+        // Remove all destroyed elements
+        this.playerBullets = this.playerBullets.filter(pb => {
+            if (pb.destroying) {
+                pb.onDestroy(this)
+            }
+
+            return !pb.destroying
+        })
+        this.enemies = this.enemies.filter(e => {
+            if (e.destroying) {
+                e.onDestroy(this)
+            }
+
+            return !e.destroying
+        })
+
+        this.time++
+        if (this.time % 30 === 0) {
+            this.spawnRandomEnemy()
+        }
+
+        // Debug
         if (this.pressedKeys.has("KeyD")) {
             this.debug = !this.debug
             this.pressedKeys.delete("KeyD")
         }
-
-        this.time++
     }
 
     draw(): void {
         this.player?.onDraw(this)
         // background doesn't use onDraw
         this.playerBullets.forEach(b => b.onDraw(this))
+        this.enemies.forEach(e => e.onDraw(this))
     }
 
     end(): void {
@@ -99,6 +139,8 @@ export class Game {
         this.player = undefined
         this.playerBullets.forEach(b => b.onDestroy(this))
         this.playerBullets.length = 0
+        this.enemies.forEach(e => e.onDestroy(this))
+        this.enemies.length = 0
 
         this.playing = false
 
@@ -114,6 +156,22 @@ export class Game {
         this.playerBullets.push(bullet)
     }
 
+    spawnRandomEnemy(): void {
+        const x = this.screen.width + 100
+        const y = (0.8 * this.screen.height) * Math.random() + 0.1 * this.screen.height
+        const vx = -1 - Math.random() * 9
+        const vy = 2 - Math.random() * 4
+        const enemy = new Level1Enemy(this)
+        enemy.x = x
+        enemy.y = y
+        enemy.vx = vx
+        enemy.vy = vy
+        this.enemies.push(enemy)
+    }
+
+    spawnEnemyBullet(x: number, y: number, vx: number, vy: number): void {
+    }
+
     playSound(sound: AudioBuffer, volume: number): void {
     }
 
@@ -121,5 +179,16 @@ export class Game {
     }
 
     stopMusic(): void {
+    }
+
+    private _hasCollided(
+        first: { x: number, y: number, hitboxRadius: number },
+        second: { x: number, y: number, hitboxRadius: number },
+    ): boolean {
+        var dx = (first.x + first.hitboxRadius) - (second.x + second.hitboxRadius);
+        var dy = (first.y + first.hitboxRadius) - (second.y + second.hitboxRadius);
+        var distance = Math.sqrt(dx * dx + dy * dy);
+
+        return distance < first.hitboxRadius + second.hitboxRadius;
     }
 }
