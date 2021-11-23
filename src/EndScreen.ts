@@ -1,6 +1,4 @@
 import * as PIXI from "pixi.js"
-import { Game } from "./Game"
-import { Menu } from "./Menu"
 import TextHelper from "./TextHelper"
 
 export class EndScreen {

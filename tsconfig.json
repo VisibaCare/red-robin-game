@@ -1,20 +1,32 @@
 {
   "compilerOptions": {
     "strict": true,
+    "allowUnreachableCode": false,
+    "allowUnusedLabels": false,
+    "exactOptionalPropertyTypes": true,
     "noFallthroughCasesInSwitch": true,
     "noImplicitOverride": true,
     "noImplicitReturns": true,
     "noUncheckedIndexedAccess": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+
     "module": "ESNext",
     "moduleResolution": "Node",
-    "rootDir": "src",
-    "types": [],
-    "newLine": "lf",
-    "outDir": "dist",
+    "resolveJsonModule": true,
+    "types": ["vite/client"],
+
+    "noEmit": true,
     "sourceMap": true,
+
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "isolatedModules": true,
-    "target": "ESNext"
-  }
+
+    "lib": ["ESNext", "DOM", "DOM.Iterable"],
+    "target": "ESNext",
+
+    "skipLibCheck": true,
+  },
+  "include": ["src"],
 }
