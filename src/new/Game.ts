@@ -13,12 +13,12 @@ export class Game {
     readonly audioContext: AudioContext
 
     readonly pressedKeys: Set<string>
-    musicAudioNode?: AudioBufferSourceNode
+    musicAudioNode: AudioBufferSourceNode | undefined
     debug: boolean
     playing: boolean
 
-    background?: Background
-    player?: Player
+    background: Background | undefined
+    player: Player | undefined
     playerBullets: PlayerBullet[]
     enemies: Enemy[]
     enemyBullets: EnemyBullet[]
